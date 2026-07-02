@@ -141,3 +141,63 @@ export function assessPronunciation(itemId: number, audio: Blob): Promise<Assess
   form.append("audio", audio, "recording.webm");
   return postForm<Assessment>("/speech/assess", form);
 }
+
+export interface Scenario {
+  key: string;
+  title_ja: string;
+  title_id: string;
+  description_id: string;
+  level: string;
+  max_student_turns: number;
+}
+
+export type ConversationRole = "partner" | "student";
+
+export interface ConversationTurn {
+  seq: number;
+  role: ConversationRole;
+  text_ja: string;
+  furigana: string | null;
+  hint_id: string | null;
+}
+
+export interface ConversationSession {
+  session_id: number;
+  scenario: string;
+  status: "in_progress" | "completed" | "abandoned";
+  max_student_turns: number;
+  turns: ConversationTurn[];
+  done: boolean;
+}
+
+export interface ConversationReply {
+  student_turn: ConversationTurn;
+  partner_turn: ConversationTurn;
+  done: boolean;
+}
+
+export interface Streak {
+  days: number;
+  active_today: boolean;
+}
+
+export function getScenarios(): Promise<Scenario[]> {
+  return get<Scenario[]>("/conversation/scenarios");
+}
+
+export function createConversationSession(scenario: string): Promise<ConversationSession> {
+  return post<ConversationSession>("/conversation/sessions", { scenario });
+}
+
+export function sendConversationReply(
+  sessionId: number,
+  textJa: string,
+): Promise<ConversationReply> {
+  return post<ConversationReply>(`/conversation/sessions/${sessionId}/reply`, {
+    text_ja: textJa,
+  });
+}
+
+export function getStreak(): Promise<Streak> {
+  return get<Streak>("/me/streak");
+}

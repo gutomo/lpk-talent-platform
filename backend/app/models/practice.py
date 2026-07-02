@@ -14,7 +14,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
 from app.models.common import CreatedAtMixin, PortableJSON, str_enum
-from app.models.enums import Sector, SessionMode, SessionStatus, TurnRole
+from app.models.enums import ConversationRole, Sector, SessionMode, SessionStatus, TurnRole
 
 
 class PronunciationAttempt(CreatedAtMixin, Base):
@@ -40,6 +40,25 @@ class ConversationSession(CreatedAtMixin, Base):
     status: Mapped[SessionStatus] = mapped_column(
         str_enum(SessionStatus, "session_status"), default=SessionStatus.IN_PROGRESS
     )
+
+    turns: Mapped[list["ConversationTurn"]] = relationship(
+        back_populates="session", order_by="ConversationTurn.seq"
+    )
+
+
+class ConversationTurn(CreatedAtMixin, Base):
+    __tablename__ = "conversation_turns"
+    __table_args__ = (UniqueConstraint("session_id", "seq"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    session_id: Mapped[int] = mapped_column(ForeignKey("conversation_sessions.id"), index=True)
+    seq: Mapped[int] = mapped_column(Integer)
+    role: Mapped[ConversationRole] = mapped_column(str_enum(ConversationRole, "conversation_role"))
+    text_ja: Mapped[str] = mapped_column(Text)
+    # partner ターンの furigana / hint_id など表示用の付随情報。
+    meta: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
+
+    session: Mapped[ConversationSession] = relationship(back_populates="turns")
 
 
 class InterviewSession(CreatedAtMixin, Base):

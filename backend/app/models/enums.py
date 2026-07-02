@@ -45,6 +45,11 @@ class TurnRole(enum.StrEnum):
     CANDIDATE = "candidate"
 
 
+class ConversationRole(enum.StrEnum):
+    PARTNER = "partner"
+    STUDENT = "student"
+
+
 class QuizSection(enum.StrEnum):
     GRAMMAR = "grammar"
     VOCABULARY = "vocabulary"

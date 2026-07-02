@@ -13,6 +13,7 @@ EXPECTED_TABLES = {
     "content_items",
     "pronunciation_attempts",
     "conversation_sessions",
+    "conversation_turns",
     "interview_sessions",
     "interview_turns",
     "interview_evaluations",

@@ -8,9 +8,13 @@ class Settings(BaseSettings):
 
     app_env: str = "dev"
     database_url: str = "postgresql+psycopg://lpk:lpk@localhost:5432/lpk"
-    # AI provider mode. "stub" = deterministic mocks (no external credentials).
-    # Switch to "azure" / "bedrock" in later slices when credentials are wired.
+    # 発音評価プロバイダ。"stub" = 資格情報不要の決定的モック、"azure" = Azure AI Speech。
     provider_mode: str = "stub"
+    # 会話・面接のLLMプロバイダ。"stub" | "bedrock"。発音評価の provider_mode とは独立に切り替える。
+    llm_provider_mode: str = "stub"
+    # llm_provider_mode=bedrock のとき使用。資格情報は boto3 の既定チェーン（環境変数等）から取る。
+    aws_region: str = "ap-northeast-1"
+    bedrock_model_id: str = "anthropic.claude-sonnet-4-20250514-v1:0"
     # Azure AI Speech（provider_mode=azure のとき必須）。
     azure_speech_key: str = ""
     azure_speech_region: str = "japaneast"

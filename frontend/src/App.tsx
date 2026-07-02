@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { getMe, logout, type Role, type User } from "./api/client";
 import { setLocale, t } from "./i18n";
+import ConversationPage from "./pages/ConversationPage";
 import LoginPage from "./pages/LoginPage";
 import PronunciationPage from "./pages/PronunciationPage";
 import StudentHomePage from "./pages/StudentHomePage";
@@ -88,6 +89,14 @@ export default function App() {
           element={
             <RoleRoute user={user} roles={["student"]}>
               <PronunciationPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/student/conversation"
+          element={
+            <RoleRoute user={user} roles={["student"]}>
+              <ConversationPage user={user as User} onLogout={handleLogout} />
             </RoleRoute>
           }
         />

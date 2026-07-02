@@ -6,6 +6,7 @@ from app.models.org import Cohort, Enrollment, Organization, User
 from app.models.passport import Passport, ShareLink
 from app.models.practice import (
     ConversationSession,
+    ConversationTurn,
     InterviewEvaluation,
     InterviewSession,
     InterviewTurn,
@@ -22,6 +23,7 @@ __all__ = [
     "Cohort",
     "ContentItem",
     "ConversationSession",
+    "ConversationTurn",
     "Enrollment",
     "Event",
     "InterviewEvaluation",
