@@ -38,8 +38,8 @@
 - [ ] FastAPI + React/Vite scaffold、docker compose（postgres）、Makefile、CI（lint + test）を新規作成
 
 **共通**
-- [ ] Alembic導入、初期マイグレーション
-- [ ] データモデル作成（下記「初期データモデル」）
+- [x] Alembic導入、初期マイグレーション
+- [x] データモデル作成（下記「初期データモデル」）
 - [ ] 認証：email + password（argon2）+ セッション、ロール制御（student / teacher / admin）
 - [ ] events記録の仕組み（全学習アクションを記録、KPI集計の元データ）
 - [ ] seedスクリプト：LPK 1、先生2、学生30（架空インドネシア名）、企業1、過去60日分の練習履歴を傾向つきで生成（優秀層 / 平均層 / リスク学生1名を仕込む）

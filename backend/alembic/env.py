@@ -9,11 +9,10 @@ from alembic import context
 # env.py lives in backend/alembic/; make the `app` package importable.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Import models so their tables register on Base.metadata.
+from app import models  # noqa: E402,F401
 from app.config import get_settings  # noqa: E402
 from app.db import Base  # noqa: E402
-
-# Import models so their tables register on Base.metadata (none yet in slice 1).
-# from app import models  # noqa: E402,F401  (enable in the data-model slice)
 
 config = context.config
 config.set_main_option("sqlalchemy.url", get_settings().database_url)
