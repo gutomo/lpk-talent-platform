@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Env files (keep *.env.example)
+.env
+**/.env
+!**/.env.example
+
+# Node
+node_modules/
+dist/
+*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
