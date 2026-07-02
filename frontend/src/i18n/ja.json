@@ -1,4 +1,25 @@
 {
   "app.title": "LPK Talent Platform",
-  "app.tagline": "日本語・発音・面接トレーニング"
+  "app.tagline": "日本語・発音・面接トレーニング",
+  "common.loading": "読み込み中...",
+  "common.error": "エラーが発生しました。もう一度お試しください。",
+  "common.logout": "ログアウト",
+  "login.email": "メールアドレス",
+  "login.password": "パスワード",
+  "login.submit": "ログイン",
+  "login.submitting": "処理中...",
+  "login.error.invalid": "メールアドレスまたはパスワードが違います。",
+  "login.error.network": "サーバーに接続できません。",
+  "login.switchLocale": "Bahasa Indonesia",
+  "student.home.title": "学生ホーム",
+  "student.home.welcome": "こんにちは、{name}さん",
+  "student.home.placeholder": "発音練習と面接練習はここに追加されます（Phase 1）。",
+  "teacher.students.title": "学生一覧",
+  "teacher.students.count": "{n}名",
+  "teacher.students.name": "氏名",
+  "teacher.students.email": "メールアドレス",
+  "teacher.students.cohort": "コース",
+  "teacher.students.lastActive": "最終利用",
+  "teacher.students.never": "未利用",
+  "teacher.students.empty": "学生が登録されていません。"
 }

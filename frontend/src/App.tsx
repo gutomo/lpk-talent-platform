@@ -1,31 +1,100 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import { getHealth } from "./api/client";
-import { t } from "./i18n";
+import { getMe, logout, type Role, type User } from "./api/client";
+import { setLocale, t } from "./i18n";
+import LoginPage from "./pages/LoginPage";
+import StudentHomePage from "./pages/StudentHomePage";
+import TeacherStudentsPage from "./pages/TeacherStudentsPage";
+
+function homePath(role: Role): string {
+  return role === "student" ? "/student" : "/teacher/students";
+}
+
+function RoleRoute({
+  user,
+  roles,
+  children,
+}: {
+  user: User | null;
+  roles: Role[];
+  children: ReactElement;
+}) {
+  if (user === null) return <Navigate to="/login" replace />;
+  if (!roles.includes(user.role)) return <Navigate to={homePath(user.role)} replace />;
+  return children;
+}
 
 export default function App() {
-  const [status, setStatus] = useState<string>("...");
+  const [user, setUser] = useState<User | null>(null);
+  const [booting, setBooting] = useState(true);
 
   useEffect(() => {
-    getHealth()
-      .then((r) => setStatus(r.status))
-      .catch(() => setStatus("error"));
+    getMe()
+      .then((me) => {
+        setLocale(me.locale);
+        setUser(me);
+      })
+      .catch(() => setUser(null))
+      .finally(() => setBooting(false));
   }, []);
 
+  function handleLogin(me: User) {
+    setLocale(me.locale);
+    setUser(me);
+  }
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } finally {
+      setLocale("id");
+      setUser(null);
+    }
+  }
+
+  if (booting) {
+    return (
+      <main style={{ padding: 16, fontFamily: "system-ui, sans-serif" }}>
+        <p>{t("common.loading")}</p>
+      </main>
+    );
+  }
+
   return (
-    <main
-      style={{
-        maxWidth: 480,
-        margin: "0 auto",
-        padding: 16,
-        fontFamily: "system-ui, sans-serif",
-      }}
-    >
-      <h1>{t("app.title")}</h1>
-      <p>{t("app.tagline")}</p>
-      <p>
-        API: <strong>{status}</strong>
-      </p>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            user !== null ? (
+              <Navigate to={homePath(user.role)} replace />
+            ) : (
+              <LoginPage onLogin={handleLogin} />
+            )
+          }
+        />
+        <Route
+          path="/student"
+          element={
+            <RoleRoute user={user} roles={["student"]}>
+              <StudentHomePage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/teacher/students"
+          element={
+            <RoleRoute user={user} roles={["teacher", "admin"]}>
+              <TeacherStudentsPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={<Navigate to={user !== null ? homePath(user.role) : "/login"} replace />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }

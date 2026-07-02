@@ -1,4 +1,25 @@
 {
   "app.title": "LPK Talent Platform",
-  "app.tagline": "Latihan bahasa Jepang, pelafalan, dan wawancara"
+  "app.tagline": "Latihan bahasa Jepang, pelafalan, dan wawancara",
+  "common.loading": "Memuat...",
+  "common.error": "Terjadi kesalahan. Silakan coba lagi.",
+  "common.logout": "Keluar",
+  "login.email": "Email",
+  "login.password": "Kata sandi",
+  "login.submit": "Masuk",
+  "login.submitting": "Memproses...",
+  "login.error.invalid": "Email atau kata sandi salah.",
+  "login.error.network": "Tidak dapat terhubung ke server.",
+  "login.switchLocale": "日本語",
+  "student.home.title": "Beranda siswa",
+  "student.home.welcome": "Halo, {name}!",
+  "student.home.placeholder": "Latihan pelafalan dan wawancara akan tersedia di sini (Phase 1).",
+  "teacher.students.title": "Daftar siswa",
+  "teacher.students.count": "{n} siswa",
+  "teacher.students.name": "Nama",
+  "teacher.students.email": "Email",
+  "teacher.students.cohort": "Kelas",
+  "teacher.students.lastActive": "Terakhir aktif",
+  "teacher.students.never": "Belum pernah",
+  "teacher.students.empty": "Belum ada siswa."
 }

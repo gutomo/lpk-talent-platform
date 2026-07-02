@@ -12,6 +12,16 @@ export function setLocale(locale: Locale): void {
   currentLocale = locale;
 }
 
-export function t(key: string): string {
-  return dictionaries[currentLocale][key] ?? key;
+export function getLocale(): Locale {
+  return currentLocale;
+}
+
+export function t(key: string, params?: Record<string, string | number>): string {
+  let text = dictionaries[currentLocale][key] ?? key;
+  if (params) {
+    for (const [name, value] of Object.entries(params)) {
+      text = text.replace(`{${name}}`, String(value));
+    }
+  }
+  return text;
 }
