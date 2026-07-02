@@ -95,6 +95,11 @@ export default function StudentHomePage({
           title={t("student.home.menu.conversation")}
           desc={t("student.home.menu.conversationDesc")}
         />
+        <MenuCard
+          to="/student/interview"
+          title={t("student.home.menu.interview")}
+          desc={t("student.home.menu.interviewDesc")}
+        />
       </nav>
     </main>
   );

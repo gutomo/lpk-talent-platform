@@ -89,6 +89,8 @@ class InterviewTurn(CreatedAtMixin, Base):
     role: Mapped[TurnRole] = mapped_column(str_enum(TurnRole, "turn_role"))
     text_ja: Mapped[str] = mapped_column(Text)
     stt: Mapped[dict[str, Any] | None] = mapped_column(PortableJSON)
+    # interviewer ターンの furigana / hint_id / prompt_version など表示用の付随情報。
+    meta: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
 
     session: Mapped[InterviewSession] = relationship(back_populates="turns")
 

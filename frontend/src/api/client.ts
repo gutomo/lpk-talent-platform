@@ -176,6 +176,58 @@ export interface ConversationReply {
   done: boolean;
 }
 
+export type InterviewRole = "interviewer" | "candidate";
+
+export interface InterviewScenario {
+  key: string;
+  title_ja: string;
+  title_id: string;
+  description_id: string;
+  level: string;
+  sector: Sector;
+  max_candidate_turns: number;
+}
+
+export interface InterviewTurn {
+  seq: number;
+  role: InterviewRole;
+  text_ja: string;
+  furigana: string | null;
+  hint_id: string | null;
+}
+
+export interface InterviewModelAnswer {
+  question_ja: string;
+  answer_ja: string;
+}
+
+export interface InterviewEvaluation {
+  rubric_version: string;
+  scores: Record<string, number>;
+  total: number;
+  summary_id: string | null;
+  summary_ja: string | null;
+  advice_id: string | null;
+  model_answers: InterviewModelAnswer[];
+}
+
+export interface InterviewSession {
+  session_id: number;
+  scenario: string;
+  status: "in_progress" | "completed" | "abandoned";
+  max_candidate_turns: number;
+  turns: InterviewTurn[];
+  done: boolean;
+  evaluation: InterviewEvaluation | null;
+}
+
+export interface InterviewReply {
+  candidate_turn: InterviewTurn;
+  interviewer_turn: InterviewTurn;
+  done: boolean;
+  evaluation: InterviewEvaluation | null;
+}
+
 export interface Streak {
   days: number;
   active_today: boolean;
@@ -200,4 +252,16 @@ export function sendConversationReply(
 
 export function getStreak(): Promise<Streak> {
   return get<Streak>("/me/streak");
+}
+
+export function getInterviewScenarios(): Promise<InterviewScenario[]> {
+  return get<InterviewScenario[]>("/interview/scenarios");
+}
+
+export function createInterviewSession(scenario: string): Promise<InterviewSession> {
+  return post<InterviewSession>("/interview/sessions", { scenario });
+}
+
+export function sendInterviewReply(sessionId: number, textJa: string): Promise<InterviewReply> {
+  return post<InterviewReply>(`/interview/sessions/${sessionId}/reply`, { text_ja: textJa });
 }
