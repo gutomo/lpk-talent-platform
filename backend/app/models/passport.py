@@ -2,11 +2,10 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
-from app.models.common import CreatedAtMixin
+from app.models.common import CreatedAtMixin, PortableJSON
 
 
 class Passport(CreatedAtMixin, Base):
@@ -16,7 +15,7 @@ class Passport(CreatedAtMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     version: Mapped[int] = mapped_column(Integer)
-    snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    snapshot: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
     pdf_ref: Mapped[str | None] = mapped_column(String(255))
 
     share_links: Mapped[list["ShareLink"]] = relationship(back_populates="passport")
@@ -31,6 +30,6 @@ class ShareLink(CreatedAtMixin, Base):
     token: Mapped[str] = mapped_column(String(64), unique=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)
-    view_log: Mapped[list[Any]] = mapped_column(JSONB, default=list)
+    view_log: Mapped[list[Any]] = mapped_column(PortableJSON, default=list)
 
     passport: Mapped[Passport] = relationship(back_populates="share_links")

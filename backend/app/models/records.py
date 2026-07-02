@@ -2,11 +2,10 @@ from datetime import date
 from typing import Any
 
 from sqlalchemy import CheckConstraint, Date, ForeignKey, Integer, String, Text, UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
-from app.models.common import CreatedAtMixin, str_enum
+from app.models.common import CreatedAtMixin, PortableJSON, str_enum
 from app.models.enums import AttendanceKind
 
 
@@ -34,5 +33,5 @@ class AttitudeReview(CreatedAtMixin, Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     reviewer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # 報連相・時間厳守・寮生活・マナー等5項目のチェックリスト。項目スキーマはサービス層で検証する。
-    checklist: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    checklist: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
     note: Mapped[str | None] = mapped_column(Text)

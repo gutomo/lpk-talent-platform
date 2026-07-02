@@ -10,11 +10,10 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
-from app.models.common import CreatedAtMixin, str_enum
+from app.models.common import CreatedAtMixin, PortableJSON, str_enum
 from app.models.enums import Sector, SessionMode, SessionStatus, TurnRole
 
 
@@ -26,8 +25,8 @@ class PronunciationAttempt(CreatedAtMixin, Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     item_id: Mapped[int] = mapped_column(ForeignKey("content_items.id"), index=True)
     # accuracy / fluency / completeness + 単語・音素スコア。prosody は ja-JP 非対応のため含めない。
-    scores: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
-    weak_words: Mapped[list[Any]] = mapped_column(JSONB, default=list)
+    scores: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
+    weak_words: Mapped[list[Any]] = mapped_column(PortableJSON, default=list)
 
 
 class ConversationSession(CreatedAtMixin, Base):
@@ -70,7 +69,7 @@ class InterviewTurn(CreatedAtMixin, Base):
     seq: Mapped[int] = mapped_column(Integer)
     role: Mapped[TurnRole] = mapped_column(str_enum(TurnRole, "turn_role"))
     text_ja: Mapped[str] = mapped_column(Text)
-    stt: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    stt: Mapped[dict[str, Any] | None] = mapped_column(PortableJSON)
 
     session: Mapped[InterviewSession] = relationship(back_populates="turns")
 
@@ -82,8 +81,8 @@ class InterviewEvaluation(CreatedAtMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     session_id: Mapped[int] = mapped_column(ForeignKey("interview_sessions.id"), unique=True)
     rubric_version: Mapped[str] = mapped_column(String(32))
-    scores: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
-    feedback: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    scores: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
+    feedback: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
     total: Mapped[int] = mapped_column(Integer)
 
     session: Mapped[InterviewSession] = relationship(back_populates="evaluation")
@@ -98,7 +97,7 @@ class MockSession(CreatedAtMixin, Base):
     score: Mapped[int] = mapped_column(Integer)
     num_questions: Mapped[int] = mapped_column(Integer)
     num_correct: Mapped[int] = mapped_column(Integer)
-    meta: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    meta: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
 
 
 class QuizAttempt(CreatedAtMixin, Base):

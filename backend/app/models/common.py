@@ -1,8 +1,12 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, func
+from sqlalchemy import JSON, DateTime, Enum, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
+
+# Postgres では JSONB、それ以外（テスト用 SQLite）では JSON。本番 DDL は JSONB のまま。
+PortableJSON = JSON().with_variant(JSONB(), "postgresql")
 
 
 def str_enum(enum_cls: type[enum.StrEnum], name: str) -> Enum:

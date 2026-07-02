@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     # AI provider mode. "stub" = deterministic mocks (no external credentials).
     # Switch to "azure" / "bedrock" in later slices when credentials are wired.
     provider_mode: str = "stub"
+    session_ttl_days: int = 7
+    # dev は http://localhost なので False。本番（ACA、https）では True にする。
+    cookie_secure: bool = False
 
 
 @lru_cache
