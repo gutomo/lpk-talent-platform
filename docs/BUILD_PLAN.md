@@ -35,14 +35,14 @@
 - [ ] docs/DESIGN.md と現状コードの差分を棚卸しし、CLAUDE.md記載のリポジトリ構成へ整理
 
 **0-B. 既存リポジトリを流用しない場合**
-- [ ] FastAPI + React/Vite scaffold、docker compose（postgres）、Makefile、CI（lint + test）を新規作成
+- [x] FastAPI + React/Vite scaffold、docker compose（postgres）、Makefile、CI（lint + test）を新規作成
 
 **共通**
 - [x] Alembic導入、初期マイグレーション
 - [x] データモデル作成（下記「初期データモデル」）
 - [x] 認証：email + password（argon2）+ セッション、ロール制御（student / teacher / admin）
 - [x] events記録の仕組み（全学習アクションを記録、KPI集計の元データ）
-- [ ] seedスクリプト：LPK 1、先生2、学生30（架空インドネシア名）、企業1、過去60日分の練習履歴を傾向つきで生成（優秀層 / 平均層 / リスク学生1名を仕込む）
+- [x] seedスクリプト：LPK 1、先生2、学生30（架空インドネシア名）、企業1、過去60日分の練習履歴を傾向つきで生成（優秀層 / 平均層 / リスク学生1名を仕込む）
 
 **受け入れ**：`make dev` で起動。3ロールでログイン可。教師画面に学生30名が見え、seedにリスク学生が含まれている。
 

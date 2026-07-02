@@ -1,4 +1,4 @@
-.PHONY: dev backend frontend test lint migrate db
+.PHONY: dev backend frontend test lint migrate db seed
 
 # make が無い環境では README の直接コマンドを使う。
 dev:
@@ -23,3 +23,6 @@ lint:
 
 migrate:
 	cd backend && uv run alembic upgrade head
+
+seed:
+	cd backend && uv run python ../scripts/seed/seed_demo.py --reset
