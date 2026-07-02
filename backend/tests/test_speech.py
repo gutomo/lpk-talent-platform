@@ -1,5 +1,6 @@
 import base64
 import json
+from datetime import date
 
 import pytest
 from fastapi.testclient import TestClient
@@ -20,6 +21,8 @@ TABLES = [
     models.User.__table__,
     models.AuthSession.__table__,
     models.Event.__table__,
+    models.Cohort.__table__,
+    models.Enrollment.__table__,
     models.ContentItem.__table__,
     models.PronunciationAttempt.__table__,
 ]
@@ -40,12 +43,22 @@ def session_factory():
         db.add(lpk)
         db.flush()
         pw = hash_password(PASSWORD)
+        siti = models.User(org_id=lpk.id, role=UserRole.STUDENT, locale=Locale.ID,
+                           name="Siti Rahma", email="siti@example.com", password_hash=pw)
+        budi = models.User(org_id=lpk.id, role=UserRole.STUDENT, locale=Locale.ID,
+                           name="Budi Santoso", email="budi@example.com", password_hash=pw)
         db.add_all([
-            models.User(org_id=lpk.id, role=UserRole.STUDENT, locale=Locale.ID,
-                        name="Siti Rahma", email="siti@example.com", password_hash=pw),
+            siti,
+            budi,
             models.User(org_id=lpk.id, role=UserRole.TEACHER, locale=Locale.JA,
                         name="田中 美咲", email="teacher@example.com", password_hash=pw),
         ])
+        cohort = models.Cohort(org_id=lpk.id, name="介護1期", sector=Sector.KAIGO,
+                               start_date=date(2026, 4, 1))
+        db.add(cohort)
+        db.flush()
+        # siti は介護コース所属、budi は未所属（全職種の課題文が見える）。
+        db.add(models.Enrollment(cohort_id=cohort.id, user_id=siti.id))
         db.add_all([
             models.ContentItem(id=1, module=ContentModule.PRONUNCIATION, sector=Sector.KAIGO,
                                text_ja="朝の検温の時間です。体温を測りますね。",
@@ -55,6 +68,17 @@ def session_factory():
             models.ContentItem(id=2, module=ContentModule.DRILL, sector=Sector.GENERAL,
                                text_ja="ドリル用アイテム", furigana=None, gloss_id=None,
                                level="A2", meta={}),
+            models.ContentItem(id=3, module=ContentModule.PRONUNCIATION,
+                               sector=Sector.RESTAURANT,
+                               text_ja="ご注文はお決まりですか。",
+                               furigana="ごちゅうもんはおきまりですか。",
+                               gloss_id="Apakah Anda sudah siap memesan?",
+                               level="A2", meta={}),
+            models.ContentItem(id=4, module=ContentModule.PRONUNCIATION, sector=Sector.GENERAL,
+                               text_ja="はじめまして。よろしくお願いします。",
+                               furigana="はじめまして。よろしくおねがいします。",
+                               gloss_id="Perkenalkan. Mohon bantuannya.",
+                               level="A1", meta={}),
         ])
         db.commit()
     return factory
@@ -86,6 +110,97 @@ def post_assess(client: TestClient, item_id: int = 1, audio: bytes = FAKE_AUDIO)
         data={"item_id": item_id},
         files={"audio": ("rec.webm", audio, "audio/webm")},
     )
+
+
+# ----------------------------------------------------------------- items list
+
+
+def test_items_requires_student_role(client: TestClient) -> None:
+    assert client.get("/speech/items").status_code == 401
+    login(client, "teacher@example.com")
+    assert client.get("/speech/items").status_code == 403
+
+
+def test_items_filters_by_cohort_sector_plus_general(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    resp = client.get("/speech/items")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert [i["id"] for i in body] == [1, 4], "介護 + 汎用のみ。外食とドリルは含まない"
+    first = body[0]
+    assert first["text_ja"].startswith("朝の検温")
+    assert first["furigana"]
+    assert first["gloss_id"]
+    assert first["level"] == "A2"
+    assert first["sector"] == "kaigo"
+
+
+def test_items_without_enrollment_returns_all_pronunciation(client: TestClient) -> None:
+    login(client, "budi@example.com")
+    ids = [i["id"] for i in client.get("/speech/items").json()]
+    assert ids == [1, 3, 4], "未所属の学生は全職種。ドリルは含まない"
+
+
+# ----------------------------------------------------------------- weak words
+
+
+def test_weak_words_requires_student_role(client: TestClient) -> None:
+    assert client.get("/speech/weak-words").status_code == 401
+    login(client, "teacher@example.com")
+    assert client.get("/speech/weak-words").status_code == 403
+
+
+def test_weak_words_empty_without_attempts(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    resp = client.get("/speech/weak-words")
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+def test_weak_words_aggregates_min_accuracy_and_count(
+    client: TestClient, session_factory
+) -> None:
+    with session_factory() as db:
+        siti_id = db.execute(
+            select(models.User.id).where(models.User.email == "siti@example.com")
+        ).scalar_one()
+        budi_id = db.execute(
+            select(models.User.id).where(models.User.email == "budi@example.com")
+        ).scalar_one()
+        db.add_all([
+            models.PronunciationAttempt(
+                user_id=siti_id, item_id=1, scores={},
+                weak_words=[{"word": "検温", "accuracy": 55}, {"word": "体温", "accuracy": 80}],
+            ),
+            models.PronunciationAttempt(
+                user_id=siti_id, item_id=1, scores={},
+                weak_words=[{"word": "検温", "accuracy": 40}],
+            ),
+            # 他学生の試行は混ざらないこと。
+            models.PronunciationAttempt(
+                user_id=budi_id, item_id=4, scores={},
+                weak_words=[{"word": "無関係", "accuracy": 10}],
+            ),
+        ])
+        db.commit()
+    login(client, "siti@example.com")
+    body = client.get("/speech/weak-words").json()
+    assert body == [
+        {"word": "検温", "accuracy": 40, "count": 2},
+        {"word": "体温", "accuracy": 80, "count": 1},
+    ]
+
+
+def test_weak_words_update_after_assess(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    result = post_assess(client).json()
+    body = client.get("/speech/weak-words").json()
+    expected = sorted(
+        ({"word": w["word"], "accuracy": w["accuracy"], "count": 1}
+         for w in result["weak_words"]),
+        key=lambda w: w["accuracy"],
+    )[:10]
+    assert body == expected
 
 
 # ------------------------------------------------------------------- endpoint
