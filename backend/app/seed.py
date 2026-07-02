@@ -11,6 +11,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app import models
+from app.content import load_phrase_bank
 from app.models.enums import (
     AttendanceKind,
     ContentModule,
@@ -47,44 +48,7 @@ STUDENT_NAMES = [
     ("Tika", "Amelia"), ("Rizky", "Pratama"),
 ]
 
-CONTENT_ITEMS = [
-    (Sector.KAIGO, "おはようございます。今日の体調はいかがですか。",
-     "おはようございます。きょうのたいちょうはいかがですか。",
-     "Selamat pagi. Bagaimana kondisi badan Anda hari ini?"),
-    (Sector.KAIGO, "朝の検温の時間です。体温を測りますね。",
-     "あさのけんおんのじかんです。たいおんをはかりますね。",
-     "Sekarang waktunya pengukuran suhu pagi. Saya ukur suhu tubuh Anda ya."),
-    (Sector.KAIGO, "田中さん、お薬の時間です。お水をどうぞ。",
-     "たなかさん、おくすりのじかんです。おみずをどうぞ。",
-     "Bapak/Ibu Tanaka, waktunya minum obat. Silakan airnya."),
-    (Sector.KAIGO, "ゆっくり立ち上がってください。手すりにつかまってくださいね。",
-     "ゆっくりたちあがってください。てすりにつかまってくださいね。",
-     "Silakan berdiri pelan-pelan. Pegang pegangannya ya."),
-    (Sector.KAIGO, "朝ごはんはぜんぶ食べられましたか。",
-     "あさごはんはぜんぶたべられましたか。",
-     "Apakah sarapannya sudah dihabiskan?"),
-    (Sector.KAIGO, "何かあったら、すぐにナースコールを押してください。",
-     "なにかあったら、すぐにナースコールをおしてください。",
-     "Kalau terjadi sesuatu, segera tekan tombol panggilan perawat."),
-    (Sector.GENERAL, "はじめまして。インドネシアから来ました。よろしくお願いします。",
-     "はじめまして。インドネシアからきました。よろしくおねがいします。",
-     "Perkenalkan, saya datang dari Indonesia. Mohon bantuannya."),
-    (Sector.GENERAL, "すみません、もう一度ゆっくり話してください。",
-     "すみません、もういちどゆっくりはなしてください。",
-     "Maaf, tolong bicara sekali lagi dengan pelan."),
-    (Sector.GENERAL, "昨日はよく眠れましたか。",
-     "きのうはよくねむれましたか。",
-     "Apakah semalam tidurnya nyenyak?"),
-    (Sector.GENERAL, "今日はいい天気ですね。散歩に行きましょう。",
-     "きょうはいいてんきですね。さんぽにいきましょう。",
-     "Hari ini cuacanya bagus ya. Ayo kita jalan-jalan."),
-    (Sector.FOOD_MANUFACTURING, "手を洗ってから、作業を始めます。",
-     "てをあらってから、さぎょうをはじめます。",
-     "Cuci tangan dulu sebelum mulai bekerja."),
-    (Sector.FOOD_MANUFACTURING, "賞味期限を確認してください。",
-     "しょうみきげんをかくにんしてください。",
-     "Tolong periksa tanggal kedaluwarsa."),
-]
+# コンテンツバンク（app/content/pronunciation_phrases_v1.json）から投入する。
 
 INTERVIEW_TURNS = [
     (TurnRole.INTERVIEWER, "自己紹介をお願いします。"),
@@ -135,6 +99,9 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
         raise RuntimeError("DB is not empty. Run with reset to reseed.")
 
     rng = random.Random(rng_seed)
+    # アイテム選択はバンク件数に依存して乱数消費量が変わるため、
+    # スコア傾向の決定性を守る目的で専用の乱数器に分離する。
+    item_rng = random.Random(rng_seed + 1)
     start = now - timedelta(days=HISTORY_DAYS - 1)
 
     lpk = models.Organization(name="LPK Harapan Nusantara", type=OrgType.LPK)
@@ -178,12 +145,15 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
         cohort = cohort_kaigo if i < 20 else cohort_food
         db.add(models.Enrollment(cohort_id=cohort.id, user_id=student.id))
 
-    items = []
-    for sector, text_ja, furigana, gloss in CONTENT_ITEMS:
-        items.append(models.ContentItem(
-            module=ContentModule.PRONUNCIATION, sector=sector, text_ja=text_ja,
-            furigana=furigana, gloss_id=gloss, level="A2", meta={},
-        ))
+    bank = load_phrase_bank()
+    items = [
+        models.ContentItem(
+            module=ContentModule.PRONUNCIATION, sector=Sector(p["sector"]),
+            text_ja=p["text_ja"], furigana=p["furigana"], gloss_id=p["gloss_id"],
+            level=p["level"], meta={"bank_version": bank["version"]},
+        )
+        for p in bank["phrases"]
+    ]
     db.add_all(items)
     db.flush()
 
@@ -214,7 +184,7 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
             log(student.id, "login", at)
 
             for _ in range(rng.randint(1, 3)):
-                item = rng.choice(my_items)
+                item = item_rng.choice(my_items)
                 accuracy = _clamp(pron_base + pron_gain * progress + rng.uniform(-3, 3))
                 scores = {
                     "accuracy": accuracy,

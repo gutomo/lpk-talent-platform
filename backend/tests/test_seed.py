@@ -44,6 +44,13 @@ def test_headcounts(db: Session) -> None:
     assert db.execute(select(func.count()).select_from(models.Enrollment)).scalar_one() == 30
 
 
+def test_content_bank_seeded(db: Session) -> None:
+    total = db.execute(select(func.count()).select_from(models.ContentItem)).scalar_one()
+    assert total == 120
+    versions = db.execute(select(models.ContentItem.meta["bank_version"])).scalars().all()
+    assert len(versions) == total
+
+
 def test_history_volume(db: Session) -> None:
     attempts = db.execute(
         select(func.count()).select_from(models.PronunciationAttempt)

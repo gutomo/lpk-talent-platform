@@ -63,8 +63,8 @@
 ---
 
 ## Phase 1：発音・会話トレーナー本実装（1.5日）
-- [ ] コンテンツバンクseed：介護40 / 食品製造20 / 外食20 / 汎用40フレーズ（text_ja、ふりがな、インドネシア語の意味、level）
-- [ ] 発音評価API `/speech/assess`：WebM/Opus → ffmpeg WAV(16kHz mono) → Azure Pronunciation Assessment（accuracy / fluency / completeness + 単語・音素スコア。prosodyは使わない）
+- [x] コンテンツバンクseed：介護40 / 食品製造20 / 外食20 / 汎用40フレーズ（text_ja、ふりがな、インドネシア語の意味、level）
+- [x] 発音評価API `/speech/assess`：WebM/Opus → ffmpeg WAV(16kHz mono) → Azure Pronunciation Assessment（accuracy / fluency / completeness + 単語・音素スコア。prosodyは使わない）
 - [ ] 学生UI：課題文表示 → タップ録音 → 単語別色分け結果 → 弱点語リスト自動更新
 - [ ] AI会話練習：既存の介護シナリオを流用し、自己紹介 / 職場会話 / 報連相 の3シナリオを追加
 - [ ] streak（連続利用日数）表示

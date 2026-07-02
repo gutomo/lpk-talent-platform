@@ -1,0 +1,847 @@
+{
+  "version": "v1",
+  "module": "pronunciation",
+  "license_note": "完全オリジナル教材。JLPT / JFT-Basic の過去問・公式問題は含まない。",
+  "phrases": [
+    {
+      "sector": "kaigo",
+      "text_ja": "おはようございます。よく眠れましたか。",
+      "furigana": "おはようございます。よくねむれましたか。",
+      "gloss_id": "Selamat pagi. Apakah Anda bisa tidur nyenyak?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "田中さん、朝ですよ。カーテンを開けますね。",
+      "furigana": "たなかさん、あさですよ。カーテンをあけますね。",
+      "gloss_id": "Tanaka-san, sudah pagi. Saya buka tirainya ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "顔を拭きますね。少し冷たいですよ。",
+      "furigana": "かおをふきますね。すこしつめたいですよ。",
+      "gloss_id": "Saya lap wajah Anda ya. Sedikit dingin lho.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "今日の体調はいかがですか。",
+      "furigana": "きょうのたいちょうはいかがですか。",
+      "gloss_id": "Bagaimana kondisi badan Anda hari ini?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "血圧を測りますので、腕を出してください。",
+      "furigana": "けつあつをはかりますので、うでをだしてください。",
+      "gloss_id": "Saya akan mengukur tekanan darah Anda, jadi tolong ulurkan lengan Anda.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "熱はありませんね。安心しました。",
+      "furigana": "ねつはありませんね。あんしんしました。",
+      "gloss_id": "Tidak ada demam ya. Saya jadi lega.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "どこか痛いところはありますか。",
+      "furigana": "どこかいたいところはありますか。",
+      "gloss_id": "Apakah ada bagian tubuh yang terasa sakit?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "昼ご飯の時間です。食堂へ行きましょう。",
+      "furigana": "ひるごはんのじかんです。しょくどうへいきましょう。",
+      "gloss_id": "Sudah waktunya makan siang. Mari kita ke ruang makan.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "ゆっくり噛んで食べてくださいね。",
+      "furigana": "ゆっくりかんでたべてくださいね。",
+      "gloss_id": "Silakan makan dengan mengunyah pelan-pelan ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "お口に合いますか。おかわりもありますよ。",
+      "furigana": "おくちにあいますか。おかわりもありますよ。",
+      "gloss_id": "Apakah makanannya cocok di lidah Anda? Ada tambahannya juga lho.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "お茶を持ってきました。少し飲みましょう。",
+      "furigana": "おちゃをもってきました。すこしのみましょう。",
+      "gloss_id": "Saya bawakan teh. Mari minum sedikit.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "水分をとることは大切ですよ。",
+      "furigana": "すいぶんをとることはたいせつですよ。",
+      "gloss_id": "Minum cukup cairan itu penting lho.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "コップを持ちますね。熱いので気をつけてください。",
+      "furigana": "コップをもちますね。あついのできをつけてください。",
+      "gloss_id": "Saya pegangkan gelasnya ya. Hati-hati karena panas.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "ゆっくりで大丈夫ですよ。手すりを持ってください。",
+      "furigana": "ゆっくりでだいじょうぶですよ。てすりをもってください。",
+      "gloss_id": "Pelan-pelan saja tidak apa-apa. Tolong pegang pegangan tangannya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "足元に気をつけて歩きましょう。",
+      "furigana": "あしもとにきをつけてあるきましょう。",
+      "gloss_id": "Mari berjalan dengan hati-hati, perhatikan langkah Anda.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "立つときは、私の肩につかまってください。",
+      "furigana": "たつときは、わたしのかたにつかまってください。",
+      "gloss_id": "Saat berdiri, silakan berpegangan pada bahu saya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "車いすを持ってきますね。少し待ってください。",
+      "furigana": "くるまいすをもってきますね。すこしまってください。",
+      "gloss_id": "Saya ambilkan kursi roda ya. Mohon tunggu sebentar.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "ブレーキをかけてから、座ってくださいね。",
+      "furigana": "ブレーキをかけてから、すわってくださいね。",
+      "gloss_id": "Silakan duduk setelah remnya dikunci ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "車いすを押します。動きますよ。",
+      "furigana": "くるまいすをおします。うごきますよ。",
+      "gloss_id": "Saya dorong kursi rodanya. Kita mulai bergerak ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "今日はお風呂の日です。準備をしましょう。",
+      "furigana": "きょうはおふろのひです。じゅんびをしましょう。",
+      "gloss_id": "Hari ini jadwal mandi. Mari kita bersiap-siap.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "お湯の温度はどうですか。熱くないですか。",
+      "furigana": "おゆのおんどはどうですか。あつくないですか。",
+      "gloss_id": "Bagaimana suhu airnya? Tidak terlalu panas?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "頭を洗いますね。目を閉じてください。",
+      "furigana": "あたまをあらいますね。めをとじてください。",
+      "gloss_id": "Saya cuci rambut Anda ya. Tolong pejamkan mata.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "食後の薬の時間です。",
+      "furigana": "しょくごのくすりのじかんです。",
+      "gloss_id": "Sekarang waktunya minum obat setelah makan.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "お水と一緒に、薬を飲んでください。",
+      "furigana": "おみずといっしょに、くすりをのんでください。",
+      "gloss_id": "Silakan minum obatnya bersama air putih.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "薬を飲んだか、確認させてくださいね。",
+      "furigana": "くすりをのんだか、かくにんさせてくださいね。",
+      "gloss_id": "Izinkan saya memastikan obatnya sudah diminum ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "何かあったら、このボタンを押してください。",
+      "furigana": "なにかあったら、このボタンをおしてください。",
+      "gloss_id": "Kalau terjadi sesuatu, silakan tekan tombol ini.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "すぐに看護師を呼びます。ここで待っていてください。",
+      "furigana": "すぐにかんごしをよびます。ここでまっていてください。",
+      "gloss_id": "Saya segera panggil perawat. Mohon tunggu di sini.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "大丈夫ですか。今、人を呼びますね。",
+      "furigana": "だいじょうぶですか。いま、ひとをよびますね。",
+      "gloss_id": "Anda baik-baik saja? Saya panggilkan orang sekarang ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "佐藤さんの食事の量が少なかったです。",
+      "furigana": "さとうさんのしょくじのりょうがすくなかったです。",
+      "gloss_id": "Tadi porsi makan Sato-san hanya sedikit.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "リーダーに報告してもいいですか。",
+      "furigana": "リーダーにほうこくしてもいいですか。",
+      "gloss_id": "Bolehkah saya melaporkannya kepada ketua tim?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "山田さんは、今朝から少し熱があります。",
+      "furigana": "やまださんは、けさからすこしねつがあります。",
+      "gloss_id": "Yamada-san sedikit demam sejak tadi pagi.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "午後から、みんなで歌を歌いましょう。",
+      "furigana": "ごごから、みんなでうたをうたいましょう。",
+      "gloss_id": "Mulai siang nanti, mari kita bernyanyi bersama-sama.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "天気がいいので、庭を散歩しませんか。",
+      "furigana": "てんきがいいので、にわをさんぽしませんか。",
+      "gloss_id": "Karena cuacanya bagus, bagaimana kalau jalan-jalan di taman?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "体操の時間です。一緒に手を動かしましょう。",
+      "furigana": "たいそうのじかんです。いっしょにてをうごかしましょう。",
+      "gloss_id": "Sekarang waktunya senam. Mari gerakkan tangan bersama-sama.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "そろそろ寝る時間ですね。",
+      "furigana": "そろそろねるじかんですね。",
+      "gloss_id": "Sudah hampir waktunya tidur ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "トイレは大丈夫ですか。寝る前に行きましょうか。",
+      "furigana": "トイレはだいじょうぶですか。ねるまえにいきましょうか。",
+      "gloss_id": "Apakah perlu ke toilet? Mau ke toilet dulu sebelum tidur?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "おやすみなさい。また明日、来ますね。",
+      "furigana": "おやすみなさい。またあした、きますね。",
+      "gloss_id": "Selamat tidur. Besok saya datang lagi ya.",
+      "level": "A1"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "電気を消してもいいですか。",
+      "furigana": "でんきをけしてもいいですか。",
+      "gloss_id": "Bolehkah saya matikan lampunya?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "部屋が暑いですね。窓を少し開けましょうか。",
+      "furigana": "へやがあついですね。まどをすこしあけましょうか。",
+      "gloss_id": "Kamarnya panas ya. Mau saya bukakan jendelanya sedikit?",
+      "level": "A2"
+    },
+    {
+      "sector": "kaigo",
+      "text_ja": "カーテンを閉めますね。もう暗くなりましたよ。",
+      "furigana": "カーテンをしめますね。もうくらくなりましたよ。",
+      "gloss_id": "Saya tutup tirainya ya. Di luar sudah gelap lho.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "作業の前に、手をよく洗ってください。",
+      "furigana": "さぎょうのまえに、てをよくあらってください。",
+      "gloss_id": "Sebelum mulai bekerja, cucilah tangan dengan bersih.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "手を洗ってから、アルコールで消毒します。",
+      "furigana": "てをあらってから、アルコールでしょうどくします。",
+      "gloss_id": "Setelah mencuci tangan, saya mendisinfeksinya dengan alkohol.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "髪の毛が出ていないか、帽子を確認してください。",
+      "furigana": "かみのけがでていないか、ぼうしをかくにんしてください。",
+      "gloss_id": "Tolong periksa topinya, apakah ada rambut yang keluar.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "マスクは鼻までしっかりつけてください。",
+      "furigana": "マスクははなまでしっかりつけてください。",
+      "gloss_id": "Tolong pakai masker dengan rapat sampai menutupi hidung.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "作業服にごみがついていないか見ます。",
+      "furigana": "さぎょうふくにごみがついていないかみます。",
+      "gloss_id": "Saya memeriksa apakah ada kotoran yang menempel di baju kerja.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "これからライン作業を始めます。お願いします。",
+      "furigana": "これからラインさぎょうをはじめます。おねがいします。",
+      "gloss_id": "Sekarang kita akan mulai pekerjaan di lini produksi. Mohon kerja samanya.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "はい、わかりました。すぐにやります。",
+      "furigana": "はい、わかりました。すぐにやります。",
+      "gloss_id": "Baik, saya mengerti. Saya akan segera mengerjakannya.",
+      "level": "A1"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "すみません、休憩室はどこですか。",
+      "furigana": "すみません、きゅうけいしつはどこですか。",
+      "gloss_id": "Permisi, ruang istirahat ada di mana?",
+      "level": "A1"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "変な物が入っていたら、すぐ教えてください。",
+      "furigana": "へんなものがはいっていたら、すぐおしえてください。",
+      "gloss_id": "Kalau ada benda aneh yang masuk, tolong segera beri tahu.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "色や形がおかしい製品は、箱に入れないでください。",
+      "furigana": "いろやかたちがおかしいせいひんは、はこにいれないでください。",
+      "gloss_id": "Produk yang warna atau bentuknya aneh jangan dimasukkan ke dalam kotak.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "製品が大丈夫か、一つずつ見ます。",
+      "furigana": "せいひんがだいじょうぶか、ひとつずつみます。",
+      "gloss_id": "Saya memeriksa satu per satu apakah produknya tidak bermasalah.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "賞味期限の日付を確認してください。",
+      "furigana": "しょうみきげんのひづけをかくにんしてください。",
+      "gloss_id": "Tolong periksa tanggal kedaluwarsanya.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "ラベルが曲がっていないか見てください。",
+      "furigana": "ラベルがまがっていないかみてください。",
+      "gloss_id": "Tolong lihat apakah labelnya tidak miring.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "数を数えて、箱に20個入れます。",
+      "furigana": "かずをかぞえて、はこににじゅっこいれます。",
+      "gloss_id": "Saya menghitung jumlahnya dan memasukkan 20 buah ke dalam kotak.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "機械に手を入れないでください。危ないです。",
+      "furigana": "きかいにてをいれないでください。あぶないです。",
+      "gloss_id": "Jangan memasukkan tangan ke dalam mesin. Itu berbahaya.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "何かあったら、この赤いボタンで止めてください。",
+      "furigana": "なにかあったら、このあかいボタンでとめてください。",
+      "gloss_id": "Kalau terjadi sesuatu, tolong hentikan mesin dengan tombol merah ini.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "原材料を倉庫から運びます。",
+      "furigana": "げんざいりょうをそうこからはこびます。",
+      "gloss_id": "Saya mengangkut bahan baku dari gudang.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "重い袋は二人で持ちましょう。",
+      "furigana": "おもいふくろはふたりでもちましょう。",
+      "gloss_id": "Karung yang berat mari kita angkat berdua.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "作業が終わりました。台の上を片づけます。",
+      "furigana": "さぎょうがおわりました。だいのうえをかたづけます。",
+      "gloss_id": "Pekerjaan sudah selesai. Saya akan merapikan bagian atas meja kerja.",
+      "level": "A2"
+    },
+    {
+      "sector": "food_manufacturing",
+      "text_ja": "道具を洗って、元の場所に戻してください。",
+      "furigana": "どうぐをあらって、もとのばしょにもどしてください。",
+      "gloss_id": "Tolong cuci peralatannya dan kembalikan ke tempat semula.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "いらっしゃいませ。何名様ですか。",
+      "furigana": "いらっしゃいませ。なんめいさまですか。",
+      "gloss_id": "Selamat datang. Untuk berapa orang?",
+      "level": "A1"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "こちらの席へどうぞ。おかけください。",
+      "furigana": "こちらのせきへどうぞ。おかけください。",
+      "gloss_id": "Silakan ke kursi sebelah sini. Silakan duduk.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "ご注文はお決まりですか。",
+      "furigana": "ごちゅうもんはおきまりですか。",
+      "gloss_id": "Apakah Anda sudah siap memesan?",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "ご注文を繰り返します。ラーメンが二つですね。",
+      "furigana": "ごちゅうもんをくりかえします。ラーメンがふたつですね。",
+      "gloss_id": "Saya ulangi pesanannya. Ramennya dua ya.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "お飲み物は何になさいますか。",
+      "furigana": "おのみものはなにになさいますか。",
+      "gloss_id": "Untuk minumannya, apa yang ingin Anda pesan?",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "今日のおすすめは焼き魚定食です。",
+      "furigana": "きょうのおすすめはやきざかなていしょくです。",
+      "gloss_id": "Rekomendasi hari ini adalah paket ikan bakar.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "こちらは少し辛いですが、とても人気があります。",
+      "furigana": "こちらはすこしからいですが、とてもにんきがあります。",
+      "gloss_id": "Yang ini agak pedas, tapi sangat populer.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "お待たせしました。天ぷらうどんです。",
+      "furigana": "おまたせしました。てんぷらうどんです。",
+      "gloss_id": "Maaf sudah menunggu. Ini udon tempura.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "熱いので、お気をつけください。",
+      "furigana": "あついので、おきをつけください。",
+      "gloss_id": "Hati-hati ya, ini panas.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "お冷やのおかわりはいかがですか。",
+      "furigana": "おひやのおかわりはいかがですか。",
+      "gloss_id": "Mau tambah air putih dingin lagi?",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "お茶をお持ちしますね。少々お待ちください。",
+      "furigana": "おちゃをおもちしますね。しょうしょうおまちください。",
+      "gloss_id": "Saya bawakan teh ya. Mohon tunggu sebentar.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "お会計は全部で千二百円です。",
+      "furigana": "おかいけいはぜんぶでせんにひゃくえんです。",
+      "gloss_id": "Totalnya semua 1.200 yen.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "レシートです。ありがとうございました。",
+      "furigana": "レシートです。ありがとうございました。",
+      "gloss_id": "Ini struknya. Terima kasih banyak.",
+      "level": "A1"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "またお越しください。お気をつけて。",
+      "furigana": "またおこしください。おきをつけて。",
+      "gloss_id": "Silakan datang lagi. Hati-hati di jalan.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "お皿をお下げしてもよろしいですか。",
+      "furigana": "おさらをおさげしてもよろしいですか。",
+      "gloss_id": "Boleh saya ambil piringnya?",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "テーブルを拭いてから、次のお客様を案内します。",
+      "furigana": "テーブルをふいてから、つぎのおきゃくさまをあんないします。",
+      "gloss_id": "Setelah mengelap meja, saya antar tamu berikutnya.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "床が濡れているので、モップで拭きます。",
+      "furigana": "ゆかがぬれているので、モップでふきます。",
+      "gloss_id": "Lantainya basah, jadi saya pel dengan mop.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "揚げ物はあと三分でできます。",
+      "furigana": "あげものはあとさんぷんでできます。",
+      "gloss_id": "Gorengannya jadi tiga menit lagi.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "盛り付けが終わったら、声をかけてください。",
+      "furigana": "もりつけがおわったら、こえをかけてください。",
+      "gloss_id": "Kalau penataan makanannya sudah selesai, tolong beri tahu saya.",
+      "level": "A2"
+    },
+    {
+      "sector": "restaurant",
+      "text_ja": "洗い場のグラスが足りないので、急いで洗います。",
+      "furigana": "あらいばのグラスがたりないので、いそいであらいます。",
+      "gloss_id": "Gelas di tempat cuci kurang, jadi saya cuci cepat-cepat.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "はじめまして。インドネシアから来ました。",
+      "furigana": "はじめまして。インドネシアからきました。",
+      "gloss_id": "Salam kenal. Saya datang dari Indonesia.",
+      "level": "A1"
+    },
+    {
+      "sector": "general",
+      "text_ja": "私はデウィと申します。よろしくお願いします。",
+      "furigana": "わたしはデウィともうします。よろしくおねがいします。",
+      "gloss_id": "Perkenalkan, nama saya Dewi. Mohon bantuannya.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "趣味は料理です。休みの日に作ります。",
+      "furigana": "しゅみはりょうりです。やすみのひにつくります。",
+      "gloss_id": "Hobi saya memasak. Saya memasak pada hari libur.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "仕事は初めてですが、頑張ります。",
+      "furigana": "しごとははじめてですが、がんばります。",
+      "gloss_id": "Ini pekerjaan pertama saya, tetapi saya akan berusaha keras.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "おはようございます。今日もよろしくお願いします。",
+      "furigana": "おはようございます。きょうもよろしくおねがいします。",
+      "gloss_id": "Selamat pagi. Hari ini juga mohon kerja samanya.",
+      "level": "A1"
+    },
+    {
+      "sector": "general",
+      "text_ja": "お先に失礼します。また明日。",
+      "furigana": "おさきにしつれいします。またあした。",
+      "gloss_id": "Saya permisi pulang duluan. Sampai jumpa besok.",
+      "level": "A1"
+    },
+    {
+      "sector": "general",
+      "text_ja": "お疲れさまでした。ゆっくり休んでください。",
+      "furigana": "おつかれさまでした。ゆっくりやすんでください。",
+      "gloss_id": "Terima kasih atas kerja kerasnya. Silakan beristirahat dengan baik.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "すみません、もう一度ゆっくり言ってください。",
+      "furigana": "すみません、もういちどゆっくりいってください。",
+      "gloss_id": "Maaf, tolong ulangi sekali lagi dengan pelan.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "この箱は棚の上でいいですか。",
+      "furigana": "このはこはたなのうえでいいですか。",
+      "gloss_id": "Apakah kotak ini boleh ditaruh di atas rak?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "その言葉の意味は何ですか。",
+      "furigana": "そのことばのいみはなんですか。",
+      "gloss_id": "Apa arti kata itu?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "明日は八時に来ればいいですか。",
+      "furigana": "あしたははちじにくればいいですか。",
+      "gloss_id": "Apakah besok saya datang jam delapan saja?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "作業が終わりました。次は何をしますか。",
+      "furigana": "さぎょうがおわりました。つぎはなにをしますか。",
+      "gloss_id": "Pekerjaannya sudah selesai. Selanjutnya saya mengerjakan apa?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "機械の音が変です。見てもらえますか。",
+      "furigana": "きかいのおとがへんです。みてもらえますか。",
+      "gloss_id": "Suara mesinnya aneh. Bisakah Anda memeriksanya?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "問題があったので、報告します。",
+      "furigana": "もんだいがあったので、ほうこくします。",
+      "gloss_id": "Karena ada masalah, saya akan melaporkannya.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "分からないことがあります。相談してもいいですか。",
+      "furigana": "わからないことがあります。そうだんしてもいいですか。",
+      "gloss_id": "Ada hal yang belum saya mengerti. Bolehkah saya berkonsultasi?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "すみません、少し手伝ってもらえますか。",
+      "furigana": "すみません、すこしてつだってもらえますか。",
+      "gloss_id": "Maaf, bisakah Anda membantu saya sebentar?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "田中さん、ちょっといいですか。お願いがあります。",
+      "furigana": "たなかさん、ちょっといいですか。おねがいがあります。",
+      "gloss_id": "Pak Tanaka, ada waktu sebentar? Saya punya permintaan.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "荷物が重いので、一緒に運んでください。",
+      "furigana": "にもつがおもいので、いっしょにはこんでください。",
+      "gloss_id": "Karena barangnya berat, tolong angkat bersama saya.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "遅くなって、すみませんでした。",
+      "furigana": "おそくなって、すみませんでした。",
+      "gloss_id": "Mohon maaf atas keterlambatannya.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "いつもありがとうございます。助かります。",
+      "furigana": "いつもありがとうございます。たすかります。",
+      "gloss_id": "Terima kasih selalu atas bantuannya. Saya sangat terbantu.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "私のミスです。これから気をつけます。",
+      "furigana": "わたしのミスです。これからきをつけます。",
+      "gloss_id": "Ini kesalahan saya. Mulai sekarang saya akan lebih berhati-hati.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "会議は何時から始まりますか。",
+      "furigana": "かいぎはなんじからはじまりますか。",
+      "gloss_id": "Rapatnya mulai jam berapa?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "来週の金曜日は休みですか。",
+      "furigana": "らいしゅうのきんようびはやすみですか。",
+      "gloss_id": "Apakah hari Jumat minggu depan libur?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "今日の予定を確認したいです。",
+      "furigana": "きょうのよていをかくにんしたいです。",
+      "gloss_id": "Saya ingin memastikan jadwal hari ini.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "朝から頭が痛いです。",
+      "furigana": "あさからあたまがいたいです。",
+      "gloss_id": "Kepala saya sakit sejak pagi.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "熱があるので、病院に行きたいです。",
+      "furigana": "ねつがあるので、びょういんにいきたいです。",
+      "gloss_id": "Karena saya demam, saya ingin pergi ke rumah sakit.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "体調が悪いので、早く帰ってもいいですか。",
+      "furigana": "たいちょうがわるいので、はやくかえってもいいですか。",
+      "gloss_id": "Karena badan saya kurang sehat, bolehkah saya pulang lebih awal?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "電車が遅れて、十分ほど遅刻します。",
+      "furigana": "でんしゃがおくれて、じゅっぷんほどちこくします。",
+      "gloss_id": "Keretanya terlambat, jadi saya akan telat sekitar sepuluh menit.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "気分が悪いので、今日は休ませてください。",
+      "furigana": "きぶんがわるいので、きょうはやすませてください。",
+      "gloss_id": "Karena saya merasa tidak enak badan, izinkan saya tidak masuk kerja hari ini.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "寝坊しました。本当にすみません。",
+      "furigana": "ねぼうしました。ほんとうにすみません。",
+      "gloss_id": "Saya bangun kesiangan. Saya benar-benar minta maaf.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "休憩に入ります。三十分で戻ります。",
+      "furigana": "きゅうけいにはいります。さんじゅっぷんでもどります。",
+      "gloss_id": "Saya istirahat dulu. Saya kembali dalam tiga puluh menit.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "お昼ご飯に行ってきます。",
+      "furigana": "おひるごはんにいってきます。",
+      "gloss_id": "Saya pergi makan siang dulu.",
+      "level": "A1"
+    },
+    {
+      "sector": "general",
+      "text_ja": "終わりの時間になりました。片付けをします。",
+      "furigana": "おわりのじかんになりました。かたづけをします。",
+      "gloss_id": "Sudah waktunya selesai. Saya akan beres-beres.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "掃除の道具はどこにありますか。",
+      "furigana": "そうじのどうぐはどこにありますか。",
+      "gloss_id": "Alat kebersihan ada di mana?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "トイレはこの階にありますか。",
+      "furigana": "トイレはこのかいにありますか。",
+      "gloss_id": "Apakah di lantai ini ada toilet?",
+      "level": "A1"
+    },
+    {
+      "sector": "general",
+      "text_ja": "このコピー機の使い方を教えてください。",
+      "furigana": "このコピーきのつかいかたをおしえてください。",
+      "gloss_id": "Tolong ajari saya cara memakai mesin fotokopi ini.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "新しい手袋はどこでもらえますか。",
+      "furigana": "あたらしいてぶくろはどこでもらえますか。",
+      "gloss_id": "Sarung tangan yang baru bisa saya dapatkan di mana?",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "今日は暑いですね。水を飲みましょう。",
+      "furigana": "きょうはあついですね。みずをのみましょう。",
+      "gloss_id": "Hari ini panas ya. Mari kita minum air.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "雨が降りそうですね。傘を持って行きます。",
+      "furigana": "あめがふりそうですね。かさをもっていきます。",
+      "gloss_id": "Sepertinya akan turun hujan ya. Saya akan membawa payung.",
+      "level": "A2"
+    },
+    {
+      "sector": "general",
+      "text_ja": "週末は何をしましたか。",
+      "furigana": "しゅうまつはなにをしましたか。",
+      "gloss_id": "Apa yang Anda lakukan akhir pekan kemarin?",
+      "level": "A2"
+    }
+  ]
+}
