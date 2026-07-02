@@ -3,9 +3,12 @@ import { Link } from "react-router-dom";
 
 import {
   createInterviewSession,
+  getInterviewHistory,
   getInterviewScenarios,
+  getInterviewSession,
   sendInterviewReply,
   type InterviewEvaluation,
+  type InterviewHistoryItem,
   type InterviewScenario,
   type InterviewSession,
   type InterviewTurn,
@@ -39,6 +42,57 @@ function scoreColor(score: number): string {
   return "#c62828";
 }
 
+// created_at（ISO, UTC）の日付部分だけを取り出す。デモ表示用に YYYY-MM-DD で十分。
+function formatDate(iso: string): string {
+  return iso.slice(0, 10);
+}
+
+// 完了した面接の総合スコア推移。外部ライブラリを使わず inline SVG で描く。
+// scores は時系列昇順（古い→新しい）。2件以上のときだけ呼ぶ。
+function TrendChart({ scores }: { scores: number[] }) {
+  const W = 300;
+  const H = 120;
+  const padX = 22;
+  const padY = 14;
+  const n = scores.length;
+  const x = (i: number) => padX + (i * (W - padX * 2)) / (n - 1);
+  const y = (v: number) => padY + (1 - v / 100) * (H - padY * 2);
+  const points = scores.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+  const last = scores[n - 1];
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      role="img"
+      aria-label={t("itv.trend.title")}
+      style={{ width: "100%", height: "auto", display: "block" }}
+    >
+      {[0, 50, 100].map((g) => (
+        <g key={g}>
+          <line x1={padX} y1={y(g)} x2={W - padX} y2={y(g)} stroke="#e3e8ef" strokeWidth={1} />
+          <text x={0} y={y(g) + 3} fontSize={9} fill="#9aa5b1">
+            {g}
+          </text>
+        </g>
+      ))}
+      <polyline points={points} fill="none" stroke="#1a5fb4" strokeWidth={2} />
+      {scores.map((v, i) => (
+        <circle key={i} cx={x(i)} cy={y(v)} r={3.5} fill={scoreColor(v)} />
+      ))}
+      <text
+        x={x(n - 1)}
+        y={y(last) - 7}
+        fontSize={11}
+        fontWeight={600}
+        fill={scoreColor(last)}
+        textAnchor="end"
+      >
+        {last}
+      </text>
+    </svg>
+  );
+}
+
 function TurnBubble({ turn }: { turn: InterviewTurn }) {
   const isCandidate = turn.role === "candidate";
   return (
@@ -68,6 +122,68 @@ function TurnBubble({ turn }: { turn: InterviewTurn }) {
         )}
       </div>
     </div>
+  );
+}
+
+// 過去の面接履歴（新しい順）とスコア推移。2件以上でグラフを出す。
+function HistorySection({
+  history,
+  onOpen,
+  disabled,
+}: {
+  history: InterviewHistoryItem[];
+  onOpen: (item: InterviewHistoryItem) => void;
+  disabled: boolean;
+}) {
+  const chronological = [...history].reverse();
+  return (
+    <section style={{ marginTop: 20 }}>
+      <p style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px" }}>{t("itv.history.title")}</p>
+      {history.length >= 2 && (
+        <div style={{ ...cardStyle, padding: 12 }}>
+          <p style={{ fontSize: 12, color: "#666", margin: "0 0 4px" }}>{t("itv.trend.title")}</p>
+          <TrendChart scores={chronological.map((h) => h.total)} />
+        </div>
+      )}
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        {history.map((h) => (
+          <li key={h.session_id}>
+            <button
+              onClick={() => onOpen(h)}
+              disabled={disabled}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 8,
+                width: "100%",
+                textAlign: "left",
+                padding: "10px 12px",
+                marginBottom: 8,
+                border: "1px solid #ddd",
+                borderRadius: 12,
+                background: "#fff",
+                cursor: disabled ? "default" : "pointer",
+              }}
+            >
+              <span style={{ minWidth: 0 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, display: "block" }}>
+                  {h.title_id ?? t("itv.history.pastLabel")}
+                </span>
+                <span style={{ fontSize: 12, color: "#666" }}>
+                  {formatDate(h.created_at)} ・ {t(`itv.mode.${h.mode}`)}
+                </span>
+              </span>
+              <span
+                style={{ fontSize: 20, fontWeight: 700, color: scoreColor(h.total), flexShrink: 0 }}
+              >
+                {h.total}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -173,9 +289,12 @@ export default function InterviewPage({
   onLogout: () => void;
 }) {
   const [scenarios, setScenarios] = useState<InterviewScenario[] | null>(null);
+  const [history, setHistory] = useState<InterviewHistoryItem[] | null>(null);
   const [session, setSession] = useState<InterviewSession | null>(null);
   const [turns, setTurns] = useState<InterviewTurn[]>([]);
   const [evaluation, setEvaluation] = useState<InterviewEvaluation | null>(null);
+  // 履歴から過去セッションを開いたときの見出し（旧シナリオキーの生表示を避ける）。
+  const [viewTitle, setViewTitle] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -187,6 +306,14 @@ export default function InterviewPage({
       .then(setScenarios)
       .catch(() => setError(t("common.error")));
   }, []);
+
+  // 一覧画面に戻るたびに履歴を取り直す（直前に完走した面接も反映される）。
+  useEffect(() => {
+    if (session !== null) return;
+    getInterviewHistory()
+      .then(setHistory)
+      .catch(() => setHistory([]));
+  }, [session]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -234,10 +361,28 @@ export default function InterviewPage({
     }
   }
 
+  async function openHistory(item: InterviewHistoryItem) {
+    setError(null);
+    setSending(true);
+    try {
+      const detail = await getInterviewSession(item.session_id);
+      setSession(detail);
+      setTurns(detail.turns);
+      setEvaluation(detail.evaluation);
+      setViewTitle(item.title_id ?? t("itv.history.pastLabel"));
+      setDraft("");
+    } catch {
+      setError(t("common.error"));
+    } finally {
+      setSending(false);
+    }
+  }
+
   function reset() {
     setSession(null);
     setTurns([]);
     setEvaluation(null);
+    setViewTitle(null);
     setDraft("");
     setError(null);
   }
@@ -283,28 +428,33 @@ export default function InterviewPage({
             <p>{t("common.loading")}</p>
           )
         ) : (
-          <nav>
-            <p style={{ fontSize: 14, color: "#555" }}>{t("itv.choose")}</p>
-            {scenarios.map((s) => (
-              <button
-                key={s.key}
-                onClick={() => void start(s.key)}
-                disabled={sending}
-                style={{ ...cardStyle, display: "block", width: "100%", textAlign: "left" }}
-              >
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}
+          <>
+            <nav>
+              <p style={{ fontSize: 14, color: "#555" }}>{t("itv.choose")}</p>
+              {scenarios.map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => void start(s.key)}
+                  disabled={sending}
+                  style={{ ...cardStyle, display: "block", width: "100%", textAlign: "left" }}
                 >
-                  <span style={{ fontSize: 17, fontWeight: 600 }}>{s.title_id}</span>
-                  <span style={badgeStyle}>{s.level}</span>
-                </div>
-                <div lang="ja" style={{ fontSize: 13, color: "#666", marginBottom: 4 }}>
-                  {s.title_ja}
-                </div>
-                <div style={{ fontSize: 14, color: "#555" }}>{s.description_id}</div>
-              </button>
-            ))}
-          </nav>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}
+                  >
+                    <span style={{ fontSize: 17, fontWeight: 600 }}>{s.title_id}</span>
+                    <span style={badgeStyle}>{s.level}</span>
+                  </div>
+                  <div lang="ja" style={{ fontSize: 13, color: "#666", marginBottom: 4 }}>
+                    {s.title_ja}
+                  </div>
+                  <div style={{ fontSize: 14, color: "#555" }}>{s.description_id}</div>
+                </button>
+              ))}
+            </nav>
+            {history !== null && history.length > 0 && (
+              <HistorySection history={history} onOpen={(h) => void openHistory(h)} disabled={sending} />
+            )}
+          </>
         )
       ) : (
         <>
@@ -317,7 +467,7 @@ export default function InterviewPage({
             }}
           >
             <span style={{ fontSize: 14, fontWeight: 600 }}>
-              {scenario?.title_id ?? session.scenario}
+              {scenario?.title_id ?? viewTitle ?? session.scenario}
             </span>
             <span style={{ fontSize: 13, color: "#666" }}>
               {t("itv.progress", {

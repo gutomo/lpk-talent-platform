@@ -8,6 +8,7 @@ from app.models.enums import Sector, SessionMode, SessionStatus, TurnRole, UserR
 from app.routers.deps import DbSession, require_role
 from app.schemas.interview import (
     EvaluationOut,
+    HistoryItemOut,
     ReplyIn,
     ReplyOut,
     ScenarioOut,
@@ -52,6 +53,22 @@ def _evaluation_out(ev: InterviewEvaluation) -> EvaluationOut:
     )
 
 
+def _history_item_out(
+    session: InterviewSession, evaluation: InterviewEvaluation
+) -> HistoryItemOut:
+    scenario = SCENARIOS.get(session.scenario)
+    return HistoryItemOut(
+        session_id=session.id,
+        scenario=session.scenario,
+        title_id=scenario["title_id"] if scenario is not None else None,
+        title_ja=scenario["title_ja"] if scenario is not None else None,
+        sector=session.sector,
+        mode=session.mode,
+        total=evaluation.total,
+        created_at=session.created_at,
+    )
+
+
 def _session_out(
     session: InterviewSession,
     turns: list[InterviewTurn],
@@ -90,6 +107,21 @@ def list_scenarios(student: Student) -> list[ScenarioOut]:
         )
         for key, s in SCENARIOS.items()
     ]
+
+
+@router.get("/history")
+def list_history(student: Student, db: DbSession) -> list[HistoryItemOut]:
+    """完了した面接の履歴（新しい順）。履歴一覧とスコア推移グラフの元データ。
+
+    評価は完走時のみ作られるので、InterviewEvaluation との内部結合で完了分だけが残る。
+    """
+    rows = db.execute(
+        select(InterviewSession, InterviewEvaluation)
+        .join(InterviewEvaluation, InterviewEvaluation.session_id == InterviewSession.id)
+        .where(InterviewSession.user_id == student.id)
+        .order_by(InterviewSession.created_at.desc(), InterviewSession.id.desc())
+    ).all()
+    return [_history_item_out(session, evaluation) for session, evaluation in rows]
 
 
 @router.post("/sessions", status_code=status.HTTP_201_CREATED)

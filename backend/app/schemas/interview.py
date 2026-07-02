@@ -1,6 +1,8 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
-from app.models.enums import Sector, SessionStatus, TurnRole
+from app.models.enums import Sector, SessionMode, SessionStatus, TurnRole
 
 
 class ScenarioOut(BaseModel):
@@ -60,3 +62,17 @@ class ReplyOut(BaseModel):
     done: bool
     # 面接完走時のみ入る。それ以外は null。
     evaluation: EvaluationOut | None = None
+
+
+class HistoryItemOut(BaseModel):
+    """完了した面接1件の要約。履歴一覧とスコア推移グラフの元データ。"""
+
+    session_id: int
+    scenario: str
+    # SCENARIOS に無い旧シナリオキー（seed の self_intro_basic 等）では None。
+    title_id: str | None = None
+    title_ja: str | None = None
+    sector: Sector
+    mode: SessionMode
+    total: int
+    created_at: datetime

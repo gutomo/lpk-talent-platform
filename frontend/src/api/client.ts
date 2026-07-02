@@ -228,6 +228,17 @@ export interface InterviewReply {
   evaluation: InterviewEvaluation | null;
 }
 
+export interface InterviewHistoryItem {
+  session_id: number;
+  scenario: string;
+  title_id: string | null;
+  title_ja: string | null;
+  sector: Sector;
+  mode: "text" | "voice";
+  total: number;
+  created_at: string;
+}
+
 export interface Streak {
   days: number;
   active_today: boolean;
@@ -264,4 +275,12 @@ export function createInterviewSession(scenario: string): Promise<InterviewSessi
 
 export function sendInterviewReply(sessionId: number, textJa: string): Promise<InterviewReply> {
   return post<InterviewReply>(`/interview/sessions/${sessionId}/reply`, { text_ja: textJa });
+}
+
+export function getInterviewHistory(): Promise<InterviewHistoryItem[]> {
+  return get<InterviewHistoryItem[]>("/interview/history");
+}
+
+export function getInterviewSession(sessionId: number): Promise<InterviewSession> {
+  return get<InterviewSession>(`/interview/sessions/${sessionId}`);
 }

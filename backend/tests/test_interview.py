@@ -207,6 +207,64 @@ def test_full_stub_interview_completes_with_evaluation(
     assert detail["evaluation"]["total"] == evaluation["total"]
 
 
+def _complete_interview(client: TestClient, scenario: str) -> dict:
+    """stub モードで面接を完走し、返ってきた evaluation を返す。"""
+    body = client.post("/interview/sessions", json={"scenario": scenario}).json()
+    sid = body["session_id"]
+    evaluation = None
+    for n in range(body["max_candidate_turns"]):
+        reply = client.post(
+            f"/interview/sessions/{sid}/reply",
+            json={"text_ja": POLITE_ANSWERS[min(n, len(POLITE_ANSWERS) - 1)]},
+        ).json()
+        evaluation = reply["evaluation"]
+    assert evaluation is not None
+    return {"session_id": sid, "total": evaluation["total"]}
+
+
+# --------------------------------------------------------------------- history
+
+
+def test_history_requires_student_role(client: TestClient) -> None:
+    assert client.get("/interview/history").status_code == 401
+    login(client, "teacher@example.com")
+    assert client.get("/interview/history").status_code == 403
+
+
+def test_history_empty_before_any_interview(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    assert client.get("/interview/history").json() == []
+
+
+def test_history_lists_completed_only_newest_first(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    first = _complete_interview(client, "kaigo")
+    second = _complete_interview(client, "restaurant")
+    # 未完了セッションは履歴に出さない（評価が無いため）。
+    open_sid = client.post("/interview/sessions", json={"scenario": "food_manufacturing"}).json()[
+        "session_id"
+    ]
+
+    history = client.get("/interview/history").json()
+    assert [h["session_id"] for h in history] == [second["session_id"], first["session_id"]]
+    assert open_sid not in [h["session_id"] for h in history]
+
+    latest = history[0]
+    assert latest["scenario"] == "restaurant"
+    assert latest["title_id"] == SCENARIOS["restaurant"]["title_id"]
+    assert latest["sector"] == "restaurant"
+    assert latest["mode"] == "text"
+    assert latest["total"] == second["total"]
+    assert latest["created_at"]
+
+
+def test_history_scoped_to_student(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    _complete_interview(client, "kaigo")
+    login(client, "budi@example.com")
+    assert client.get("/interview/history").json() == []
+
+
 def test_reply_rejects_other_users_session(client: TestClient) -> None:
     login(client, "siti@example.com")
     sid = client.post("/interview/sessions", json={"scenario": "restaurant"}).json()[
