@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     # カスタムサブドメイン利用時の上書き（例: https://myresource.cognitiveservices.azure.com）。
     # 空なら region ベースの STT エンドポイントを使う。
     azure_speech_endpoint: str = ""
+    # 面接官の音声合成に使う Neural TTS の声（ja-JP）。STT と同じ Speech リソースを使う。
+    azure_tts_voice: str = "ja-JP-NanamiNeural"
     session_ttl_days: int = 7
     # dev は http://localhost なので False。本番（ACA、https）では True にする。
     cookie_secure: bool = False

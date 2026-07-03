@@ -286,6 +286,144 @@ def test_reply_validates_text(client: TestClient) -> None:
     )
 
 
+# ----------------------------------------------------------------- voice mode
+
+
+def _voice_reply(client: TestClient, sid: int, audio: bytes = b"voice-bytes"):
+    return client.post(
+        f"/interview/sessions/{sid}/reply/voice",
+        files={"audio": ("rec.webm", audio, "audio/webm")},
+    )
+
+
+def test_create_session_defaults_to_text_mode(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    body = client.post("/interview/sessions", json={"scenario": "kaigo"}).json()
+    assert body["mode"] == "text"
+
+
+def test_full_stub_voice_interview_completes(client: TestClient, session_factory) -> None:
+    login(client, "siti@example.com")
+    body = client.post("/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}).json()
+    assert body["mode"] == "voice"
+    sid = body["session_id"]
+    max_turns = body["max_candidate_turns"]
+
+    evaluation = None
+    for n in range(1, max_turns + 1):
+        resp = _voice_reply(client, sid, audio=f"voice-{n}".encode())
+        assert resp.status_code == 200
+        reply = resp.json()
+        assert reply["candidate_turn"]["role"] == "candidate"
+        assert reply["candidate_turn"]["text_ja"], "STT の認識テキストが候補者ターンに入る"
+        assert reply["interviewer_turn"]["role"] == "interviewer"
+        assert reply["done"] is (n == max_turns), "上限到達で done"
+        if n == max_turns:
+            evaluation = reply["evaluation"]
+    assert evaluation is not None, "音声モードでも完走時に評価が返る"
+    assert 0 <= evaluation["total"] <= 100
+
+    with session_factory() as db:
+        session = db.get(models.InterviewSession, sid)
+        assert session.mode.value == "voice"
+        turns = db.execute(
+            select(models.InterviewTurn)
+            .where(models.InterviewTurn.session_id == sid)
+            .order_by(models.InterviewTurn.seq)
+        ).scalars().all()
+        candidates = [t for t in turns if t.role == TurnRole.CANDIDATE]
+        assert len(candidates) == max_turns
+        for t in candidates:
+            assert t.stt is not None, "音声ターンは STT メタを保存する"
+            assert t.stt["provider"] == "stub"
+            assert t.stt["recognized_text"] == t.text_ja
+
+
+def test_voice_reply_rejects_text_session(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    sid = client.post("/interview/sessions", json={"scenario": "kaigo"}).json()["session_id"]
+    assert _voice_reply(client, sid).status_code == 409, "テキストセッションに音声返信は不可"
+
+
+def test_voice_reply_empty_audio_returns_422(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    sid = client.post(
+        "/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}
+    ).json()["session_id"]
+    assert _voice_reply(client, sid, audio=b"").status_code == 422
+
+
+def test_voice_reply_rejects_other_users_session(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    sid = client.post(
+        "/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}
+    ).json()["session_id"]
+    login(client, "budi@example.com")
+    assert _voice_reply(client, sid).status_code == 404
+
+
+def test_voice_reply_maps_no_speech_to_422(client: TestClient, monkeypatch) -> None:
+    from app.services.speech import NoSpeechRecognizedError
+
+    def boom(data: bytes) -> dict:
+        raise NoSpeechRecognizedError("InitialSilenceTimeout")
+
+    monkeypatch.setattr("app.routers.interview.transcribe", boom)
+    login(client, "siti@example.com")
+    sid = client.post(
+        "/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}
+    ).json()["session_id"]
+    resp = _voice_reply(client, sid)
+    assert resp.status_code == 422
+    assert "no_speech" in resp.json()["detail"]
+
+
+def test_voice_reply_maps_provider_error_to_502(client: TestClient, monkeypatch) -> None:
+    from app.services.speech import SpeechProviderError
+
+    def boom(data: bytes) -> dict:
+        raise SpeechProviderError("HTTP 401")
+
+    monkeypatch.setattr("app.routers.interview.transcribe", boom)
+    login(client, "siti@example.com")
+    sid = client.post(
+        "/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}
+    ).json()["session_id"]
+    assert _voice_reply(client, sid).status_code == 502
+
+
+def test_turn_audio_stub_returns_204(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    sid = client.post(
+        "/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}
+    ).json()["session_id"]
+    # 開幕ターン(seq=1)は面接官。stub モードは音声を生成せず 204。
+    resp = client.get(f"/interview/sessions/{sid}/turns/1/audio")
+    assert resp.status_code == 204
+
+
+def test_turn_audio_serves_azure_bytes(client: TestClient, monkeypatch) -> None:
+    monkeypatch.setattr("app.routers.interview.synthesize", lambda text: b"ID3fake-mp3-bytes")
+    login(client, "siti@example.com")
+    sid = client.post(
+        "/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}
+    ).json()["session_id"]
+    resp = client.get(f"/interview/sessions/{sid}/turns/1/audio")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "audio/mpeg"
+    assert resp.content == b"ID3fake-mp3-bytes"
+
+
+def test_turn_audio_rejects_candidate_and_unknown_turn(client: TestClient) -> None:
+    login(client, "siti@example.com")
+    sid = client.post(
+        "/interview/sessions", json={"scenario": "kaigo", "mode": "voice"}
+    ).json()["session_id"]
+    _voice_reply(client, sid)  # seq=2 が候補者、seq=3 が面接官
+    assert client.get(f"/interview/sessions/{sid}/turns/2/audio").status_code == 404
+    assert client.get(f"/interview/sessions/{sid}/turns/999/audio").status_code == 404
+
+
 # ----------------------------------------------------------- service (stub / bedrock)
 
 

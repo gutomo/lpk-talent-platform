@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 from sqlalchemy import select
 
 from app.models import InterviewEvaluation, InterviewSession, InterviewTurn, User
@@ -16,6 +16,7 @@ from app.schemas.interview import (
     SessionOut,
     TurnOut,
 )
+from app.services.audio import AudioConversionError
 from app.services.events import log_event
 from app.services.interview import (
     PROMPT_VERSION,
@@ -25,10 +26,19 @@ from app.services.interview import (
     evaluate_interview,
     generate_question,
 )
+from app.services.speech import (
+    NoSpeechRecognizedError,
+    SpeechProviderError,
+    transcribe,
+)
+from app.services.tts import TTS_MEDIA_TYPE, TtsProviderError, synthesize
 
 router = APIRouter(prefix="/interview", tags=["interview"])
 
 Student = Annotated[User, Depends(require_role(UserRole.STUDENT))]
+
+# 音声返信のアップロード上限。面接1ターンは数十秒の想定で、余裕を持たせる（発音評価と同値）。
+MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 
 
 def _turn_out(turn: InterviewTurn) -> TurnOut:
@@ -85,6 +95,7 @@ def _session_out(
         session_id=session.id,
         scenario=session.scenario,
         status=session.status,
+        mode=session.mode,
         max_candidate_turns=max_candidate_turns,
         turns=[_turn_out(t) for t in turns],
         done=session.status == SessionStatus.COMPLETED,
@@ -135,7 +146,7 @@ def create_session(student: Student, db: DbSession, body: SessionCreateIn) -> Se
         user_id=student.id,
         scenario=body.scenario,
         sector=Sector(scenario["sector"]),
-        mode=SessionMode.TEXT,
+        mode=body.mode,
     )
     db.add(session)
     db.flush()
@@ -156,21 +167,36 @@ def create_session(student: Student, db: DbSession, body: SessionCreateIn) -> Se
         db,
         student.id,
         "interview_started",
-        {"session_id": session.id, "scenario": body.scenario},
+        {"session_id": session.id, "scenario": body.scenario, "mode": body.mode},
     )
     db.commit()
     return _session_out(session, [turn], None)
 
 
-@router.post("/sessions/{session_id}/reply")
-def reply(student: Student, db: DbSession, session_id: int, body: ReplyIn) -> ReplyOut:
-    """学生の回答を記録し、面接官の次の発話を返す。完走時はルーブリック評価も保存して返す。"""
+def _get_active_session(
+    db: DbSession, student: User, session_id: int
+) -> InterviewSession:
+    """本人の進行中セッションを返す。無ければ404、完了済みなら409。"""
     session = db.get(InterviewSession, session_id)
     if session is None or session.user_id != student.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Session not found")
     if session.status != SessionStatus.IN_PROGRESS:
         raise HTTPException(status.HTTP_409_CONFLICT, "Session already finished")
+    return session
 
+
+def _apply_turn(
+    db: DbSession,
+    student: User,
+    session: InterviewSession,
+    text_ja: str,
+    stt: dict | None = None,
+) -> ReplyOut:
+    """学生の回答（テキスト or STT結果）を記録し、面接官の次の発話を返す。
+
+    完走時はルーブリック評価も保存して返す。テキスト・音声の両モードで共有する。
+    stt を渡すと候補者ターンの stt 列に保存する（音声モードの認識メタ）。
+    """
     turns = list(
         db.execute(
             select(InterviewTurn)
@@ -179,7 +205,7 @@ def reply(student: Student, db: DbSession, session_id: int, body: ReplyIn) -> Re
         ).scalars()
     )
     candidate_turns = sum(1 for t in turns if t.role == TurnRole.CANDIDATE) + 1
-    history = [(t.role, t.text_ja) for t in turns] + [(TurnRole.CANDIDATE, body.text_ja)]
+    history = [(t.role, t.text_ja) for t in turns] + [(TurnRole.CANDIDATE, text_ja)]
     # 失敗時は全てロールバックされるので、最終ターンの再送でやり直せる。
     try:
         result = generate_question(session.scenario, history, candidate_turns)
@@ -197,7 +223,8 @@ def reply(student: Student, db: DbSession, session_id: int, body: ReplyIn) -> Re
         session_id=session.id,
         seq=turns[-1].seq + 1,
         role=TurnRole.CANDIDATE,
-        text_ja=body.text_ja,
+        text_ja=text_ja,
+        stt=stt,
     )
     interviewer_turn = InterviewTurn(
         session_id=session.id,
@@ -240,6 +267,76 @@ def reply(student: Student, db: DbSession, session_id: int, body: ReplyIn) -> Re
         done=evaluation is not None,
         evaluation=_evaluation_out(evaluation) if evaluation is not None else None,
     )
+
+
+@router.post("/sessions/{session_id}/reply")
+def reply(student: Student, db: DbSession, session_id: int, body: ReplyIn) -> ReplyOut:
+    """テキストモード: 学生の回答文を記録し、面接官の次の発話を返す。"""
+    session = _get_active_session(db, student, session_id)
+    return _apply_turn(db, student, session, body.text_ja)
+
+
+@router.post("/sessions/{session_id}/reply/voice")
+def reply_voice(
+    student: Student,
+    db: DbSession,
+    session_id: int,
+    audio: Annotated[UploadFile, File()],
+) -> ReplyOut:
+    """音声モード: 録音 → ffmpeg → STT(ja-JP) → 面接官の次の発話。
+
+    認識テキストは候補者ターンの text_ja に入り、認識メタは stt 列に保存する。
+    """
+    session = _get_active_session(db, student, session_id)
+    if session.mode != SessionMode.VOICE:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Session is not in voice mode")
+
+    data = audio.file.read(MAX_UPLOAD_BYTES + 1)
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "Audio file too large")
+    if not data:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Empty audio upload")
+
+    try:
+        stt_result = transcribe(data)
+    except AudioConversionError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT, f"audio_invalid: {exc}"
+        ) from exc
+    except NoSpeechRecognizedError as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"no_speech: {exc}") from exc
+    except SpeechProviderError as exc:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, f"speech_provider: {exc}") from exc
+
+    stt = {
+        "provider": stt_result["provider"],
+        "recognized_text": stt_result["text"],
+        "confidence": stt_result["confidence"],
+    }
+    return _apply_turn(db, student, session, stt_result["text"], stt=stt)
+
+
+@router.get("/sessions/{session_id}/turns/{seq}/audio")
+def turn_audio(student: Student, db: DbSession, session_id: int, seq: int) -> Response:
+    """面接官ターンの合成音声（MP3）を返す。stub モードでは 204（フロントが browser TTS）。"""
+    session = db.get(InterviewSession, session_id)
+    if session is None or session.user_id != student.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Session not found")
+    turn = db.execute(
+        select(InterviewTurn).where(
+            InterviewTurn.session_id == session.id, InterviewTurn.seq == seq
+        )
+    ).scalar_one_or_none()
+    if turn is None or turn.role != TurnRole.INTERVIEWER:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Interviewer turn not found")
+
+    try:
+        audio = synthesize(turn.text_ja)
+    except TtsProviderError as exc:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, f"tts_provider: {exc}") from exc
+    if audio is None:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return Response(content=audio, media_type=TTS_MEDIA_TYPE)
 
 
 @router.get("/sessions/{session_id}")

@@ -215,6 +215,7 @@ export interface InterviewSession {
   session_id: number;
   scenario: string;
   status: "in_progress" | "completed" | "abandoned";
+  mode: "text" | "voice";
   max_candidate_turns: number;
   turns: InterviewTurn[];
   done: boolean;
@@ -269,12 +270,38 @@ export function getInterviewScenarios(): Promise<InterviewScenario[]> {
   return get<InterviewScenario[]>("/interview/scenarios");
 }
 
-export function createInterviewSession(scenario: string): Promise<InterviewSession> {
-  return post<InterviewSession>("/interview/sessions", { scenario });
+export function createInterviewSession(
+  scenario: string,
+  mode: "text" | "voice" = "text",
+): Promise<InterviewSession> {
+  return post<InterviewSession>("/interview/sessions", { scenario, mode });
 }
 
 export function sendInterviewReply(sessionId: number, textJa: string): Promise<InterviewReply> {
   return post<InterviewReply>(`/interview/sessions/${sessionId}/reply`, { text_ja: textJa });
+}
+
+// 音声モードの返信。録音（WebM/Opus 等）を送り、STT の認識テキストは candidate_turn.text_ja に入る。
+export function sendInterviewVoiceReply(
+  sessionId: number,
+  audio: Blob,
+): Promise<InterviewReply> {
+  const form = new FormData();
+  form.append("audio", audio, "recording.webm");
+  return postForm<InterviewReply>(`/interview/sessions/${sessionId}/reply/voice`, form);
+}
+
+// 面接官ターンの合成音声。stub モードはサーバ音声なし(204)で null を返す（呼び出し側で browser TTS）。
+export async function getInterviewTurnAudio(
+  sessionId: number,
+  seq: number,
+): Promise<Blob | null> {
+  const res = await fetch(`${BASE}/interview/sessions/${sessionId}/turns/${seq}/audio`);
+  if (res.status === 204) return null;
+  if (!res.ok) {
+    throw new ApiError(res.status, `GET turn audio failed: ${res.status}`);
+  }
+  return await res.blob();
 }
 
 export function getInterviewHistory(): Promise<InterviewHistoryItem[]> {

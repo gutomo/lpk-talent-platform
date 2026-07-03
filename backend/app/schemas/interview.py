@@ -40,12 +40,14 @@ class EvaluationOut(BaseModel):
 
 class SessionCreateIn(BaseModel):
     scenario: str
+    mode: SessionMode = SessionMode.TEXT
 
 
 class SessionOut(BaseModel):
     session_id: int
     scenario: str
     status: SessionStatus
+    mode: SessionMode
     max_candidate_turns: int
     turns: list[TurnOut]
     done: bool

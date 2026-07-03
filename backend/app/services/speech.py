@@ -55,6 +55,19 @@ def assess_pronunciation(audio_bytes: bytes, reference_text: str) -> dict[str, A
     return assess_stub(audio_bytes, reference_text)
 
 
+def transcribe(audio_bytes: bytes) -> dict[str, Any]:
+    """音声（WebM/Opus 等）を ja-JP で文字起こしする。面接の音声モードで使う。
+
+    発音評価と違い参照文が無いので Pronunciation-Assessment ヘッダは付けない。
+    返り値: {provider, text, confidence}。無音・言語不一致は NoSpeechRecognizedError。
+    """
+    settings = get_settings()
+    if settings.provider_mode == "azure":
+        wav = to_wav_16k_mono(audio_bytes)
+        return transcribe_azure(wav, settings)
+    return transcribe_stub(audio_bytes)
+
+
 def extract_weak_words(result: dict[str, Any]) -> list[dict[str, Any]]:
     """weak_words jsonb（[{word, accuracy}]）を評価結果から抽出する。"""
     weak: dict[str, int] = {}
@@ -118,6 +131,23 @@ def assess_stub(audio_bytes: bytes, reference_text: str) -> dict[str, Any]:
         "recognized_text": reference_text,
         "words": words,
     }
+
+
+# stub モードでは実際の認識ができないので、面接を疎通させるための定型回答を返す。
+# 音声バイトのハッシュで選ぶので、同じ録音なら決定的、ターンごとの録音が変われば回答も変わる。
+_STUB_TRANSCRIPTS = (
+    "はい、よろしくお願いします。",
+    "シティと申します。インドネシアから参りました。",
+    "家族の介護をした経験があり、日本で介護の仕事を学びたいです。",
+    "分からないことは、すぐに先輩に報告して相談します。",
+    "はい、体調管理に気をつけて、早く寝るようにしています。",
+    "研修の制度について教えていただけますか。",
+)
+
+
+def transcribe_stub(audio_bytes: bytes) -> dict[str, Any]:
+    idx = int(hashlib.sha256(audio_bytes).hexdigest()[:8], 16) % len(_STUB_TRANSCRIPTS)
+    return {"provider": "stub", "text": _STUB_TRANSCRIPTS[idx], "confidence": 90}
 
 
 # --------------------------------------------------------------- azure provider
@@ -204,3 +234,48 @@ def assess_azure(
     if resp.status_code != 200:
         raise SpeechProviderError(f"Azure Speech HTTP {resp.status_code}: {resp.text[:200]}")
     return parse_azure_response(resp.json())
+
+
+def parse_stt_response(payload: dict[str, Any]) -> dict[str, Any]:
+    """会話 STT（発音評価なし）の detailed 応答から文字起こしを取り出す。"""
+    status_ = payload.get("RecognitionStatus")
+    if status_ in ("NoMatch", "InitialSilenceTimeout", "BabbleTimeout"):
+        raise NoSpeechRecognizedError(str(status_))
+    if status_ != "Success":
+        raise SpeechProviderError(f"RecognitionStatus={status_}")
+    nbest = payload.get("NBest") or []
+    if nbest:
+        best = nbest[0]
+        text = best.get("Display") or best.get("Lexical") or ""
+        confidence = _score(float(best.get("Confidence", 0.0)) * 100)
+    else:
+        text = payload.get("DisplayText") or ""
+        confidence = 0
+    if not text.strip():
+        raise NoSpeechRecognizedError("認識テキストが空です")
+    return {"provider": "azure", "text": text, "confidence": confidence}
+
+
+def transcribe_azure(wav_bytes: bytes, settings: Settings) -> dict[str, Any]:
+    if not settings.azure_speech_key:
+        raise SpeechProviderError(
+            "AZURE_SPEECH_KEY が未設定です。provider_mode=azure には資格情報が必要です。"
+        )
+    headers = {
+        "Ocp-Apim-Subscription-Key": settings.azure_speech_key,
+        "Content-Type": "audio/wav; codecs=audio/pcm; samplerate=16000",
+        "Accept": "application/json",
+    }
+    try:
+        resp = httpx.post(
+            stt_url(settings),
+            params={"language": "ja-JP", "format": "detailed"},
+            headers=headers,
+            content=wav_bytes,
+            timeout=_AZURE_TIMEOUT,
+        )
+    except httpx.HTTPError as exc:
+        raise SpeechProviderError(f"Azure Speech へ接続できません: {exc}") from exc
+    if resp.status_code != 200:
+        raise SpeechProviderError(f"Azure Speech HTTP {resp.status_code}: {resp.text[:200]}")
+    return parse_stt_response(resp.json())

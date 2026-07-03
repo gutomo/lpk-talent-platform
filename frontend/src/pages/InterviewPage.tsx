@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
+  ApiError,
   createInterviewSession,
   getInterviewHistory,
   getInterviewScenarios,
   getInterviewSession,
+  getInterviewTurnAudio,
   sendInterviewReply,
+  sendInterviewVoiceReply,
   type InterviewEvaluation,
   type InterviewHistoryItem,
   type InterviewScenario,
@@ -19,6 +22,12 @@ import { t } from "../i18n";
 
 // 表示順は rubric の定義順（backend/app/prompts/interview_v1.py）に合わせる。
 const AXES = ["japanese", "consistency", "keigo", "hourensou", "clarity"] as const;
+
+// 面接1ターンの回答は数十秒想定。会話STTの短音声上限に収まるよう自動停止する。
+const MAX_RECORD_SEC = 45;
+
+type SessionMode = "text" | "voice";
+type VoicePhase = "idle" | "recording" | "uploading";
 
 const cardStyle: React.CSSProperties = {
   border: "1px solid #ddd",
@@ -93,7 +102,7 @@ function TrendChart({ scores }: { scores: number[] }) {
   );
 }
 
-function TurnBubble({ turn }: { turn: InterviewTurn }) {
+function TurnBubble({ turn, onSpeak }: { turn: InterviewTurn; onSpeak?: () => void }) {
   const isCandidate = turn.role === "candidate";
   return (
     <div
@@ -112,9 +121,27 @@ function TurnBubble({ turn }: { turn: InterviewTurn }) {
           border: isCandidate ? "1px solid #b9d2f0" : "1px solid #ddd",
         }}
       >
-        <p lang="ja" style={{ margin: 0, fontSize: 17, lineHeight: 1.5 }}>
-          {turn.text_ja}
-        </p>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+          <p lang="ja" style={{ margin: 0, fontSize: 17, lineHeight: 1.5, flex: 1 }}>
+            {turn.text_ja}
+          </p>
+          {onSpeak !== undefined && (
+            <button
+              onClick={onSpeak}
+              aria-label={t("itv.voice.listen")}
+              style={{
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                fontSize: 16,
+                padding: 0,
+                lineHeight: 1.5,
+              }}
+            >
+              🔊
+            </button>
+          )}
+        </div>
         {turn.furigana !== null && turn.furigana !== "" && (
           <p lang="ja" style={{ margin: "4px 0 0", fontSize: 12, color: "#666" }}>
             {turn.furigana}
@@ -298,8 +325,17 @@ export default function InterviewPage({
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 新規セッションで開始するモード（テキスト / 音声）。
+  const [mode, setMode] = useState<SessionMode>("text");
+  const [voicePhase, setVoicePhase] = useState<VoicePhase>("idle");
+  const [elapsed, setElapsed] = useState(0);
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     getInterviewScenarios()
@@ -319,6 +355,18 @@ export default function InterviewPage({
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [turns, evaluation]);
 
+  // アンマウント時に録音・再生を確実に止める。
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) window.clearInterval(timerRef.current);
+      const rec = recorderRef.current;
+      if (rec !== null && rec.state !== "inactive") rec.stop();
+      stopPlayback();
+      if (audioUrlRef.current !== null) URL.revokeObjectURL(audioUrlRef.current);
+    };
+    // マウント時のみ登録する（ref は再レンダーで変わらない）。
+  }, []);
+
   const scenario =
     session !== null && scenarios !== null
       ? (scenarios.find((s) => s.key === session.scenario) ?? null)
@@ -327,16 +375,133 @@ export default function InterviewPage({
   const lastHint =
     [...turns].reverse().find((turn) => turn.role === "interviewer")?.hint_id ?? null;
   const done = evaluation !== null;
+  const isVoice = session !== null && session.mode === "voice";
+
+  function stopTimer() {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }
+
+  function stopPlayback() {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (audioRef.current !== null) audioRef.current.pause();
+  }
+
+  // サーバ音声(Neural TTS)が無い(stub)ときのフォールバック。ブラウザ内蔵の ja-JP 音声で読み上げる。
+  function browserSpeak(textJa: string) {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(textJa);
+    utterance.lang = "ja-JP";
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // 面接官ターンを音声で再生する。サーバ音声があればそれを、無ければ browser TTS。
+  async function speak(sessionId: number, seq: number, textJa: string) {
+    stopPlayback();
+    try {
+      const blob = await getInterviewTurnAudio(sessionId, seq);
+      if (blob !== null) {
+        if (audioUrlRef.current !== null) URL.revokeObjectURL(audioUrlRef.current);
+        const url = URL.createObjectURL(blob);
+        audioUrlRef.current = url;
+        const audio = audioRef.current ?? new Audio();
+        audioRef.current = audio;
+        audio.src = url;
+        await audio.play().catch(() => browserSpeak(textJa));
+        return;
+      }
+    } catch {
+      // サーバ音声の取得に失敗しても読み上げは続ける。
+    }
+    browserSpeak(textJa);
+  }
+
+  async function startRecording() {
+    setError(null);
+    if (typeof MediaRecorder === "undefined") {
+      setError(t("itv.voice.error.mic"));
+      return;
+    }
+    stopPlayback();
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((m) =>
+        MediaRecorder.isTypeSupported(m),
+      );
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
+        void sendVoice(blob);
+      };
+      recorderRef.current = recorder;
+      recorder.start();
+      setElapsed(0);
+      setVoicePhase("recording");
+      const startedAt = Date.now();
+      timerRef.current = window.setInterval(() => {
+        const sec = Math.floor((Date.now() - startedAt) / 1000);
+        setElapsed(sec);
+        if (sec >= MAX_RECORD_SEC) stopRecording();
+      }, 250);
+    } catch {
+      setError(t("itv.voice.error.mic"));
+    }
+  }
+
+  function stopRecording() {
+    stopTimer();
+    const rec = recorderRef.current;
+    if (rec !== null && rec.state !== "inactive") rec.stop();
+    recorderRef.current = null;
+  }
+
+  async function sendVoice(blob: Blob) {
+    if (session === null || done) return;
+    setVoicePhase("uploading");
+    try {
+      const reply = await sendInterviewVoiceReply(session.session_id, blob);
+      setTurns((prev) => [...prev, reply.candidate_turn, reply.interviewer_turn]);
+      setEvaluation(reply.evaluation);
+      void speak(session.session_id, reply.interviewer_turn.seq, reply.interviewer_turn.text_ja);
+    } catch (err) {
+      if (
+        err instanceof ApiError &&
+        err.status === 422 &&
+        err.message.startsWith("no_speech")
+      ) {
+        setError(t("itv.voice.error.noSpeech"));
+      } else {
+        setError(t("itv.error.voice"));
+      }
+    } finally {
+      setVoicePhase("idle");
+    }
+  }
 
   async function start(key: string) {
     setError(null);
     setSending(true);
     try {
-      const created = await createInterviewSession(key);
+      const created = await createInterviewSession(key, mode);
       setSession(created);
       setTurns(created.turns);
       setEvaluation(created.evaluation);
       setDraft("");
+      // 音声モードは開幕質問を自動で読み上げる。
+      if (created.mode === "voice" && created.turns.length > 0) {
+        const opening = created.turns[0];
+        void speak(created.session_id, opening.seq, opening.text_ja);
+      }
     } catch {
       setError(t("common.error"));
     } finally {
@@ -379,6 +544,9 @@ export default function InterviewPage({
   }
 
   function reset() {
+    stopRecording();
+    stopPlayback();
+    setVoicePhase("idle");
     setSession(null);
     setTurns([]);
     setEvaluation(null);
@@ -430,6 +598,38 @@ export default function InterviewPage({
         ) : (
           <>
             <nav>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}
+              >
+                <span style={{ fontSize: 14, color: "#555" }}>{t("itv.mode.label")}</span>
+                <div
+                  style={{
+                    display: "inline-flex",
+                    border: "1px solid #ccc",
+                    borderRadius: 999,
+                    overflow: "hidden",
+                  }}
+                >
+                  {(["text", "voice"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setMode(m)}
+                      aria-pressed={mode === m}
+                      style={{
+                        padding: "6px 14px",
+                        fontSize: 14,
+                        border: "none",
+                        cursor: "pointer",
+                        background: mode === m ? "#1a5fb4" : "#fff",
+                        color: mode === m ? "#fff" : "#333",
+                      }}
+                    >
+                      {m === "voice" ? "🎤 " : ""}
+                      {t(`itv.mode.${m}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <p style={{ fontSize: 14, color: "#555" }}>{t("itv.choose")}</p>
               {scenarios.map((s) => (
                 <button
@@ -487,7 +687,15 @@ export default function InterviewPage({
             }}
           >
             {turns.map((turn) => (
-              <TurnBubble key={turn.seq} turn={turn} />
+              <TurnBubble
+                key={turn.seq}
+                turn={turn}
+                onSpeak={
+                  isVoice && turn.role === "interviewer"
+                    ? () => void speak(session.session_id, turn.seq, turn.text_ja)
+                    : undefined
+                }
+              />
             ))}
             <div ref={bottomRef} />
           </section>
@@ -501,40 +709,84 @@ export default function InterviewPage({
                   💡 {lastHint}
                 </p>
               )}
-              <div style={{ display: "flex", gap: 8 }}>
-                <input
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") void send();
-                  }}
-                  placeholder={t("itv.placeholder")}
-                  lang="ja"
-                  enterKeyHint="send"
-                  disabled={sending}
-                  style={{
-                    flex: 1,
-                    padding: "10px 12px",
-                    fontSize: 16,
-                    border: "1px solid #ccc",
-                    borderRadius: 12,
-                  }}
-                />
-                <button
-                  onClick={() => void send()}
-                  disabled={sending || draft.trim() === ""}
-                  style={{
-                    padding: "10px 16px",
-                    fontSize: 16,
-                    background: sending || draft.trim() === "" ? "#9aa5b1" : "#1a5fb4",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 12,
-                  }}
-                >
-                  {sending ? t("itv.sending") : t("itv.send")}
-                </button>
-              </div>
+              {isVoice ? (
+                <div style={{ textAlign: "center" }}>
+                  {voicePhase === "recording" ? (
+                    <button
+                      onClick={stopRecording}
+                      style={{
+                        width: "100%",
+                        padding: 16,
+                        fontSize: 18,
+                        background: "#b00020",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 12,
+                      }}
+                    >
+                      ⏹ {t("itv.voice.stop")}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => void startRecording()}
+                      disabled={voicePhase === "uploading"}
+                      style={{
+                        width: "100%",
+                        padding: 16,
+                        fontSize: 18,
+                        background: voicePhase === "uploading" ? "#9aa5b1" : "#1a5fb4",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 12,
+                      }}
+                    >
+                      {voicePhase === "uploading"
+                        ? t("itv.voice.uploading")
+                        : `🎤 ${t("itv.voice.record")}`}
+                    </button>
+                  )}
+                  {voicePhase === "recording" && (
+                    <p style={{ color: "#b00020", margin: "8px 0 0" }}>
+                      {t("itv.voice.recording", { sec: elapsed })}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") void send();
+                    }}
+                    placeholder={t("itv.placeholder")}
+                    lang="ja"
+                    enterKeyHint="send"
+                    disabled={sending}
+                    style={{
+                      flex: 1,
+                      padding: "10px 12px",
+                      fontSize: 16,
+                      border: "1px solid #ccc",
+                      borderRadius: 12,
+                    }}
+                  />
+                  <button
+                    onClick={() => void send()}
+                    disabled={sending || draft.trim() === ""}
+                    style={{
+                      padding: "10px 16px",
+                      fontSize: 16,
+                      background: sending || draft.trim() === "" ? "#9aa5b1" : "#1a5fb4",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 12,
+                    }}
+                  >
+                    {sending ? t("itv.sending") : t("itv.send")}
+                  </button>
+                </div>
+              )}
             </section>
           )}
           {error !== null && (

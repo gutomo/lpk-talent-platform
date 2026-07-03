@@ -465,3 +465,62 @@ def test_scores_are_clamped_to_0_100() -> None:
     assert speech._score(-5) == 0
     assert speech._score(None) == 0
     assert speech._score(82.6) == 83
+
+
+# --------------------------------------------------------------- transcribe (STT)
+
+
+def test_transcribe_stub_is_deterministic() -> None:
+    a = speech.transcribe_stub(b"voice-1")
+    b = speech.transcribe_stub(b"voice-1")
+    assert a == b
+    assert a["provider"] == "stub"
+    assert a["text"], "定型の日本語回答を返す"
+    assert 0 <= a["confidence"] <= 100
+
+
+def test_transcribe_stub_picks_from_pool() -> None:
+    seen = {speech.transcribe_stub(f"voice-{i}".encode())["text"] for i in range(20)}
+    assert seen, "音声ごとにプールから回答を選ぶ"
+    assert seen <= set(speech._STUB_TRANSCRIPTS)
+
+
+def test_parse_stt_response_success_detailed() -> None:
+    payload = {
+        "RecognitionStatus": "Success",
+        "DisplayText": "はい、よろしくお願いします。",
+        "NBest": [
+            {
+                "Confidence": 0.92,
+                "Lexical": "はい よろしく お願い します",
+                "Display": "はい、よろしくお願いします。",
+            }
+        ],
+    }
+    result = speech.parse_stt_response(payload)
+    assert result["provider"] == "azure"
+    assert result["text"] == "はい、よろしくお願いします。"
+    assert result["confidence"] == 92
+
+
+def test_parse_stt_response_falls_back_to_display_text() -> None:
+    payload = {"RecognitionStatus": "Success", "DisplayText": "こんにちは。"}
+    result = speech.parse_stt_response(payload)
+    assert result["text"] == "こんにちは。"
+    assert result["confidence"] == 0
+
+
+@pytest.mark.parametrize("status_", ["NoMatch", "InitialSilenceTimeout", "BabbleTimeout"])
+def test_parse_stt_response_no_speech(status_: str) -> None:
+    with pytest.raises(speech.NoSpeechRecognizedError):
+        speech.parse_stt_response({"RecognitionStatus": status_})
+
+
+def test_parse_stt_response_empty_text_is_no_speech() -> None:
+    with pytest.raises(speech.NoSpeechRecognizedError):
+        speech.parse_stt_response({"RecognitionStatus": "Success", "NBest": [{"Display": "   "}]})
+
+
+def test_parse_stt_response_error_status() -> None:
+    with pytest.raises(speech.SpeechProviderError):
+        speech.parse_stt_response({"RecognitionStatus": "Error"})
