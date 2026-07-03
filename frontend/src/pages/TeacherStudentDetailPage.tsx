@@ -3,12 +3,18 @@ import { Link, useParams } from "react-router-dom";
 
 import {
   ATTITUDE_KEYS,
+  createShareLink,
   generatePassport,
+  getShareLinks,
   getStudentDetail,
+  passportPdfUrl,
   postAttendance,
   postAttitude,
+  revokeShareLink,
+  shareUrl,
   type AttendanceKind,
   type AttitudeChecklist,
+  type ShareLink,
   type StudentDetail,
   type User,
 } from "../api/client";
@@ -17,7 +23,7 @@ import TrendChart, { scoreColor } from "../components/TrendChart";
 import { t } from "../i18n";
 
 // 保存操作の対象セクション。saving / notice / error を1系統で管理する。
-type Section = "attendance" | "attitude" | "passport";
+type Section = "attendance" | "attitude" | "passport" | "share";
 
 const cardStyle: React.CSSProperties = {
   border: "1px solid #ddd",
@@ -116,6 +122,10 @@ export default function TeacherStudentDetailPage({
   const [checklist, setChecklist] = useState<AttitudeChecklist | null>(null);
   const [attitudeNote, setAttitudeNote] = useState("");
 
+  // 共有リンク一覧。null は読み込み中。
+  const [links, setLinks] = useState<ShareLink[] | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
   const [saving, setSaving] = useState<Section | null>(null);
   const [notice, setNotice] = useState<Section | null>(null);
   const [saveError, setSaveError] = useState<Section | null>(null);
@@ -131,6 +141,9 @@ export default function TeacherStudentDetailPage({
         setChecklist(initialChecklist(d));
       })
       .catch(() => setLoadError(true));
+    getShareLinks(studentId)
+      .then(setLinks)
+      .catch(() => setLinks([]));
   }, [studentId]);
 
   function beginSave(section: Section) {
@@ -194,6 +207,48 @@ export default function TeacherStudentDetailPage({
       })
       .catch(() => setSaveError("passport"))
       .finally(() => setSaving(null));
+  }
+
+  function createLink() {
+    if (detail === null || detail.latest_passport === null || saving !== null) return;
+    beginSave("share");
+    createShareLink(detail.id)
+      .then((link) => {
+        setLinks((prev) => [link, ...(prev ?? [])]);
+        setNotice("share");
+      })
+      .catch(() => setSaveError("share"))
+      .finally(() => setSaving(null));
+  }
+
+  function revokeLink(linkId: number) {
+    if (detail === null || saving !== null) return;
+    beginSave("share");
+    revokeShareLink(detail.id, linkId)
+      .then((updated) => {
+        setLinks((prev) =>
+          prev === null ? prev : prev.map((l) => (l.id === updated.id ? updated : l)),
+        );
+        setNotice("share");
+      })
+      .catch(() => setSaveError("share"))
+      .finally(() => setSaving(null));
+  }
+
+  function copyLink(link: ShareLink) {
+    navigator.clipboard
+      .writeText(shareUrl(link.token))
+      .then(() => {
+        setCopiedId(link.id);
+        window.setTimeout(() => setCopiedId((prev) => (prev === link.id ? null : prev)), 2000);
+      })
+      .catch(() => setSaveError("share"));
+  }
+
+  function linkStatus(link: ShareLink): string {
+    if (link.revoked) return t("teacher.detail.share.status.revoked");
+    if (!link.active) return t("teacher.detail.share.status.expired");
+    return t("teacher.detail.share.status.active", { date: formatDate(link.expires_at) });
   }
 
   function sectionStatus(section: Section) {
@@ -591,12 +646,147 @@ export default function TeacherStudentDetailPage({
                 </>
               )}
             </p>
-            <button onClick={generate} disabled={saving !== null} style={buttonStyle}>
-              {saving === "passport"
-                ? t("teacher.detail.passport.generating")
-                : t("teacher.detail.passport.generate")}
-            </button>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <button onClick={generate} disabled={saving !== null} style={buttonStyle}>
+                {saving === "passport"
+                  ? t("teacher.detail.passport.generating")
+                  : t("teacher.detail.passport.generate")}
+              </button>
+              {detail.latest_passport !== null && (
+                <a
+                  href={passportPdfUrl(detail.id)}
+                  style={{
+                    ...buttonStyle,
+                    background: "#fff",
+                    color: "#1a5fb4",
+                    border: "1px solid #1a5fb4",
+                    textDecoration: "none",
+                    display: "inline-block",
+                  }}
+                >
+                  {t("teacher.detail.passport.pdf")}
+                </a>
+              )}
+            </div>
             {sectionStatus("passport")}
+          </section>
+
+          <section style={cardStyle}>
+            <p style={sectionTitleStyle}>{t("teacher.detail.share.title")}</p>
+            <p style={{ fontSize: 13, color: "#666", margin: "0 0 12px" }}>
+              {t("teacher.detail.share.hint")}
+            </p>
+            <button
+              onClick={createLink}
+              disabled={saving !== null || detail.latest_passport === null}
+              style={buttonStyle}
+            >
+              {saving === "share"
+                ? t("teacher.detail.share.creating")
+                : t("teacher.detail.share.create")}
+            </button>
+            {sectionStatus("share")}
+
+            {links !== null && links.length === 0 && (
+              <p style={{ fontSize: 14, color: "#666", margin: "12px 0 0" }}>
+                {t("teacher.detail.share.empty")}
+              </p>
+            )}
+            {links !== null && links.length > 0 && (
+              <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0" }}>
+                {links.map((link) => (
+                  <li
+                    key={link.id}
+                    style={{
+                      borderTop: "1px solid #eee",
+                      padding: "10px 0",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: link.active ? "#2e7d32" : "#9aa5b1",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {linkStatus(link)}
+                    </span>
+                    <span style={{ fontSize: 13, color: "#666", whiteSpace: "nowrap" }}>
+                      {t("teacher.detail.passport.version", { n: link.passport_version })} ・{" "}
+                      {t("teacher.detail.share.views", { n: link.views })}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: "#999",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: 180,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      /share/{link.token}
+                    </span>
+                    <span style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+                      {link.active && (
+                        <>
+                          <button
+                            onClick={() => copyLink(link)}
+                            style={{
+                              ...buttonStyle,
+                              padding: "6px 10px",
+                              fontSize: 13,
+                              background: "#fff",
+                              color: "#1a5fb4",
+                              border: "1px solid #1a5fb4",
+                            }}
+                          >
+                            {copiedId === link.id
+                              ? t("teacher.detail.share.copied")
+                              : t("teacher.detail.share.copy")}
+                          </button>
+                          <a
+                            href={shareUrl(link.token)}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              ...buttonStyle,
+                              padding: "6px 10px",
+                              fontSize: 13,
+                              background: "#fff",
+                              color: "#1a5fb4",
+                              border: "1px solid #1a5fb4",
+                              textDecoration: "none",
+                            }}
+                          >
+                            {t("teacher.detail.share.open")}
+                          </a>
+                          <button
+                            onClick={() => revokeLink(link.id)}
+                            disabled={saving !== null}
+                            style={{
+                              ...buttonStyle,
+                              padding: "6px 10px",
+                              fontSize: 13,
+                              background: "#fff",
+                              color: "#c62828",
+                              border: "1px solid #c62828",
+                            }}
+                          >
+                            {t("teacher.detail.share.revoke")}
+                          </button>
+                        </>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </>
       )}

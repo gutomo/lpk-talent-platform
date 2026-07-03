@@ -2,7 +2,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import auth, conversation, health, interview, me, passport, speech, students
+from app.routers import (
+    auth,
+    conversation,
+    health,
+    interview,
+    me,
+    passport,
+    share,
+    speech,
+    students,
+)
 
 settings = get_settings()
 
@@ -24,6 +34,7 @@ app.include_router(speech.router)
 app.include_router(conversation.router)
 app.include_router(interview.router)
 app.include_router(passport.router)
+app.include_router(share.router)
 
 
 @app.get("/")

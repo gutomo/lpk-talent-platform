@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Talent Passport</title>
+<style>
+  @font-face {
+    font-family: "Noto Sans JP";
+    src: url("content/fonts/NotoSansJP-Regular.otf");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "Noto Sans JP";
+    src: url("content/fonts/NotoSansJP-Bold.otf");
+    font-weight: 700;
+  }
+  @page {
+    size: A4;
+    margin: 12mm 14mm;
+    @bottom-center {
+      content: "本資料はLPKの学習記録に基づく候補者紹介シートです。JLPT帯は模試による推定であり公式認定ではありません。";
+      font-family: "Noto Sans JP", sans-serif;
+      font-size: 7pt;
+      color: #888;
+    }
+  }
+  * {
+    font-family: "Noto Sans JP", sans-serif;
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-size: 9.5pt;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+  header {
+    border-bottom: 2.5pt solid #1c5d99;
+    padding-bottom: 6pt;
+    margin-bottom: 10pt;
+  }
+  .doc-title {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #1c5d99;
+    margin: 0;
+  }
+  .student-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 4pt;
+  }
+  .student-name {
+    font-size: 13pt;
+    font-weight: 700;
+  }
+  .meta {
+    font-size: 8pt;
+    color: #555;
+  }
+  section {
+    margin-bottom: 8pt;
+  }
+  h2 {
+    font-size: 10pt;
+    font-weight: 700;
+    background: #eef3f8;
+    border-left: 3pt solid #1c5d99;
+    padding: 2pt 6pt;
+    margin: 0 0 4pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+  th, td {
+    border: 0.5pt solid #ccc;
+    padding: 2pt 5pt;
+    text-align: left;
+  }
+  th {
+    background: #f5f7fa;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .score {
+    font-weight: 700;
+    color: #1c5d99;
+  }
+  .grid2 {
+    display: flex;
+    gap: 10pt;
+  }
+  .grid2 > div {
+    flex: 1;
+  }
+  .quote {
+    background: #f7f7f7;
+    border-left: 2pt solid #bbb;
+    padding: 2pt 6pt;
+    margin: 2pt 0;
+    font-size: 8.5pt;
+    color: #444;
+  }
+  .muted {
+    color: #777;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="doc-title">Talent Passport（候補者紹介シート）</p>
+  <div class="student-line">
+    <span class="student-name">{{ student_name }}</span>
+    <span class="meta">
+      {% if cohort %}{{ cohort }}　{% endif %}
+      {% if sector_ja %}職種：{{ sector_ja }}　{% endif %}
+      第{{ version }}版　生成日：{{ generated_at }}
+    </span>
+  </div>
+</header>
+
+<section>
+  <h2>サマリー</h2>
+  <table>
+    <tr>
+      <th>日本語レベル（推定）</th>
+      <th>発音平均（0-100）</th>
+      <th>面接評価 直近（0-100）</th>
+      <th>出席率</th>
+    </tr>
+    <tr>
+      <td>{% if level_current %}<span class="score">{{ level_current }}</span>{% else %}<span class="muted">計測中</span>{% endif %}</td>
+      <td>{% if pron_avg is not none %}<span class="score">{{ pron_avg }}</span>（{{ pron_attempts }}回練習）{% else %}<span class="muted">計測中</span>{% endif %}</td>
+      <td>{% if itv_latest is not none %}<span class="score">{{ itv_latest }}</span>（平均 {{ itv_avg }}・{{ itv_sessions }}回）{% else %}<span class="muted">計測中</span>{% endif %}</td>
+      <td>{% if attendance_rate is not none %}<span class="score">{{ attendance_rate }}%</span>{% else %}<span class="muted">記録なし</span>{% endif %}</td>
+    </tr>
+  </table>
+</section>
+
+<div class="grid2">
+  <div>
+    <section>
+      <h2>模試スコア推移</h2>
+      {% if mock_trend %}
+      <table>
+        <tr><th>日付</th><th>スコア</th></tr>
+        {% for p in mock_trend %}
+        <tr><td>{{ p.date }}</td><td>{{ p.score }}</td></tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p class="muted">模試の受験記録はまだありません。</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>発音・弱点語</h2>
+      {% if weak_words %}
+      <table>
+        <tr><th>語</th><th>最低スコア</th><th>出現回数</th></tr>
+        {% for w in weak_words %}
+        <tr><td>{{ w.word }}</td><td>{{ w.min_accuracy }}</td><td>{{ w.count }}</td></tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p class="muted">顕著な弱点語はありません。</p>
+      {% endif %}
+      <p>会話練習 完了：{{ conversation_completed }}回</p>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <h2>面接スコア推移</h2>
+      {% if itv_trend %}
+      <table>
+        <tr><th>日付</th><th>総合</th></tr>
+        {% for p in itv_trend %}
+        <tr><td>{{ p.date }}</td><td>{{ p.total }}</td></tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p class="muted">模擬面接の記録はまだありません。</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>生活態度（教師評価）</h2>
+      {% if attitude_rows %}
+      <table>
+        {% for row in attitude_rows %}
+        <tr><th>{{ row.label }}</th><td>{{ row.value }}</td></tr>
+        {% endfor %}
+      </table>
+      {% if attitude_note %}<p class="quote">{{ attitude_note }}</p>{% endif %}
+      <p class="meta">評価日：{{ attitude_reviewed_at }}</p>
+      {% else %}
+      <p class="muted">評価はまだありません。</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+
+<section>
+  <h2>職種別チェックリスト</h2>
+  <table>
+    <tr>
+      {% for item in checklist %}<th>{{ item.label_ja }}</th>{% endfor %}
+    </tr>
+    <tr>
+      {% for item in checklist %}<td>{% if item.done %}○ 達成{% else %}― 未達{% endif %}</td>{% endfor %}
+    </tr>
+  </table>
+</section>
+
+{% if transcript_excerpt %}
+<section>
+  <h2>模擬面接の発話抜粋（本人の日本語）</h2>
+  {% for line in transcript_excerpt %}
+  <p class="quote">「{{ line }}」</p>
+  {% endfor %}
+</section>
+{% endif %}
+
+</body>
+</html>

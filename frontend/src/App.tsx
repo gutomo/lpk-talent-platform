@@ -7,6 +7,7 @@ import ConversationPage from "./pages/ConversationPage";
 import InterviewPage from "./pages/InterviewPage";
 import LoginPage from "./pages/LoginPage";
 import PronunciationPage from "./pages/PronunciationPage";
+import SharePassportPage from "./pages/SharePassportPage";
 import StudentHomePage from "./pages/StudentHomePage";
 import TeacherStudentDetailPage from "./pages/TeacherStudentDetailPage";
 import TeacherStudentsPage from "./pages/TeacherStudentsPage";
@@ -126,6 +127,8 @@ export default function App() {
             </RoleRoute>
           }
         />
+        {/* 企業向け共有ビュー。ログイン不要（トークンのみで認可、日本語のみ）。 */}
+        <Route path="/share/:token" element={<SharePassportPage />} />
         <Route
           path="*"
           element={<Navigate to={user !== null ? homePath(user.role) : "/login"} replace />}

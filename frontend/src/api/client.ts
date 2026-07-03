@@ -113,10 +113,17 @@ export type AttitudeKey = (typeof ATTITUDE_KEYS)[number];
 
 export type AttitudeChecklist = Record<AttitudeKey, number>;
 
-// Passport snapshot（passport-v1）のうち詳細ページが読む部分だけを型に起こす。
+export interface SnapshotStudent {
+  name: string;
+  cohort: string | null;
+  sector: Sector | null;
+}
+
+// Passport snapshot（passport-v1）のうち詳細ページ・共有ビューが読む部分だけを型に起こす。
 export interface StudentSummary {
   snapshot_version: string;
   generated_at: string;
+  student: SnapshotStudent;
   japanese_level: {
     current: string | null;
     trend: { date: string; score: number }[];
@@ -191,6 +198,56 @@ export interface PassportOut {
 
 export function generatePassport(studentId: number): Promise<PassportOut> {
   return post<PassportOut>(`/passports/${studentId}`);
+}
+
+// 教師用PDF（cookie認証）。<a href> で開くためURLだけ返す。
+export function passportPdfUrl(studentId: number): string {
+  return `${BASE}/passports/${studentId}/pdf`;
+}
+
+export interface ShareLink {
+  id: number;
+  token: string;
+  passport_version: number;
+  created_at: string;
+  expires_at: string;
+  revoked: boolean;
+  active: boolean;
+  views: number;
+  last_viewed_at: string | null;
+}
+
+// 企業向け共有ビュー（ログイン不要）。snapshot は StudentSummary と同一構造。
+export interface SharedPassport {
+  version: number;
+  created_at: string;
+  expires_at: string;
+  snapshot: StudentSummary;
+}
+
+export function getShareLinks(studentId: number): Promise<ShareLink[]> {
+  return get<ShareLink[]>(`/passports/${studentId}/share-links`);
+}
+
+export function createShareLink(studentId: number): Promise<ShareLink> {
+  return post<ShareLink>(`/passports/${studentId}/share-links`);
+}
+
+export function revokeShareLink(studentId: number, linkId: number): Promise<ShareLink> {
+  return post<ShareLink>(`/passports/${studentId}/share-links/${linkId}/revoke`);
+}
+
+export function getSharedPassport(token: string): Promise<SharedPassport> {
+  return get<SharedPassport>(`/share/${token}`);
+}
+
+export function sharedPdfUrl(token: string): string {
+  return `${BASE}/share/${token}/pdf`;
+}
+
+// 企業に渡すURL（フロントの公開ページ）。トークンはURL経路のみで伝搬する。
+export function shareUrl(token: string): string {
+  return `${window.location.origin}/share/${token}`;
 }
 
 export type Sector = "kaigo" | "food_manufacturing" | "restaurant" | "general";
