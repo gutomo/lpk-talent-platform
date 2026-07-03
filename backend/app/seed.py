@@ -11,12 +11,13 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app import models
-from app.content import load_phrase_bank
+from app.content import load_phrase_bank, load_quiz_bank
 from app.models.enums import (
     AttendanceKind,
     ContentModule,
     Locale,
     OrgType,
+    QuizSection,
     Sector,
     SessionMode,
     SessionStatus,
@@ -85,7 +86,8 @@ def reset_all(db: Session) -> None:
     tables = [
         models.Event, models.AuthSession, models.QuizAttempt, models.MockSession,
         models.InterviewEvaluation, models.InterviewTurn, models.InterviewSession,
-        models.ConversationSession, models.PronunciationAttempt, models.ShareLink,
+        models.ConversationTurn, models.ConversationSession,
+        models.PronunciationAttempt, models.ShareLink,
         models.Passport, models.AttendanceRecord, models.AttitudeReview, models.QuizItem,
         models.Enrollment, models.Cohort, models.ContentItem, models.User, models.Organization,
     ]
@@ -155,6 +157,20 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
         for p in bank["phrases"]
     ]
     db.add_all(items)
+    db.flush()
+
+    # ドリル問題バンク（人間レビュー済みのオリジナル問題なので review_flag=False で即出題可）。
+    quiz_bank = load_quiz_bank()
+    quiz_items = [
+        models.QuizItem(
+            section=QuizSection(q["section"]), level=q["level"], question=q["question"],
+            choices=q["choices"], answer_index=q["answer_index"],
+            explanation_id=q["explanation_id"], review_flag=False,
+            meta={**q.get("meta", {}), "bank_version": quiz_bank["version"]},
+        )
+        for q in quiz_bank["items"]
+    ]
+    db.add_all(quiz_items)
     db.flush()
 
     def items_for(sector: Sector) -> list[models.ContentItem]:
@@ -286,6 +302,7 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
         "admins": 1,
         "students": len(students),
         "content_items": len(items),
+        "quiz_items": len(quiz_items),
         "risk_student_email": students[RISK_INDEX].email,
         "demo_student_email": students[0].email,
         "teacher_email": teachers[0].email,

@@ -1,0 +1,1089 @@
+{
+  "version": "v1",
+  "module": "drill",
+  "license_note": "完全オリジナル問題。JLPT / JFT-Basic の過去問・公式問題は含まない。アプリ内では「非公式・試験対策用」表記を必ず出す。",
+  "items": [
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "天気予報によると、あしたは雨が（　）そうです。",
+      "choices": ["ふって", "ふる", "ふり", "ふれば"],
+      "answer_index": 1,
+      "explanation_id": "「〜そうです」(kabar/katanya) dipakai setelah bentuk kamus: 降るそうです = katanya akan turun hujan."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "休みの日は、部屋をそうじ（　）、買い物に行ったりします。",
+      "choices": ["して", "すれば", "したり", "しながら"],
+      "answer_index": 2,
+      "explanation_id": "Pola 「〜たり〜たりします」 menyebut beberapa kegiatan sebagai contoh."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "音楽を（　）ながら、料理をします。",
+      "choices": ["聞き", "聞く", "聞いて", "聞いた"],
+      "answer_index": 0,
+      "explanation_id": "「〜ながら」(sambil) dipakai setelah bentuk masu tanpa ます: 聞きながら."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "日本に（　）ら、介護の仕事をしたいです。",
+      "choices": ["行く", "行け", "行って", "行った"],
+      "answer_index": 3,
+      "explanation_id": "Kondisional 「〜たら」 dibentuk dari bentuk た + ら: 行ったら = kalau (sudah) pergi."
+    },
+    {
+      "section": "grammar",
+      "level": "JFT-Basic",
+      "question": "工場では、安全のルールを（　）なければなりません。",
+      "choices": ["守る", "守り", "守ら", "守って"],
+      "answer_index": 2,
+      "explanation_id": "「〜なければなりません」(harus) memakai bentuk ない tanpa ない: 守ら + なければなりません."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "ここで写真を（　）もいいですか。",
+      "choices": ["とる", "とって", "とった", "とり"],
+      "answer_index": 1,
+      "explanation_id": "Meminta izin dengan 「〜てもいいですか」: とってもいいですか = bolehkah memotret?"
+    },
+    {
+      "section": "grammar",
+      "level": "JFT-Basic",
+      "question": "作業中に、スマホを（　）はいけません。",
+      "choices": ["使う", "使った", "使い", "使って"],
+      "answer_index": 3,
+      "explanation_id": "Larangan 「〜てはいけません」: 使ってはいけません = tidak boleh memakai."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "わたしは一度も日本へ（　）ことがありません。",
+      "choices": ["行った", "行く", "行って", "行かない"],
+      "answer_index": 0,
+      "explanation_id": "Pengalaman 「〜たことがあります / ありません」 memakai bentuk lampau た: 行ったことがありません."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "来年、日本語の試験を（　）と思っています。",
+      "choices": ["受ける", "受けて", "受けよう", "受けた"],
+      "answer_index": 2,
+      "explanation_id": "Bentuk niat (意向形) + と思っています = berniat akan: 受けようと思っています."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "今日は疲れたので、早く（　）つもりです。",
+      "choices": ["寝る", "寝て", "寝よう", "寝た"],
+      "answer_index": 0,
+      "explanation_id": "「〜つもりです」(bermaksud) dipakai setelah bentuk kamus: 寝るつもりです."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "空が暗いですね。雨が降る（　）。",
+      "choices": ["はずがありません", "かもしれません", "ことにします", "ところです"],
+      "answer_index": 1,
+      "explanation_id": "「〜かもしれません」 = mungkin. Melihat langit gelap lalu menduga akan hujan."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "頭が（　）ので、薬を飲みました。",
+      "choices": ["痛い", "痛くて", "痛いです", "痛さ"],
+      "answer_index": 0,
+      "explanation_id": "「〜ので」(karena) dipakai setelah bentuk biasa: 痛いので."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "たくさん練習した（　）、まだ上手に話せません。",
+      "choices": ["から", "ので", "のに", "し"],
+      "answer_index": 2,
+      "explanation_id": "「〜のに」 = padahal / meskipun. Hasilnya berlawanan dengan harapan."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "この店は安い（　）、おいしいし、駅から近いです。",
+      "choices": ["のに", "ても", "たり", "し"],
+      "answer_index": 3,
+      "explanation_id": "「〜し、〜し」 menyebutkan beberapa alasan: murah, enak, dan dekat stasiun."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "リナさんは日本語の新聞が（　）。",
+      "choices": ["読みます", "読めます", "読まれます", "読ませます"],
+      "answer_index": 1,
+      "explanation_id": "Bentuk potensial 読める = bisa membaca. Dengan bentuk potensial, objek memakai partikel が."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "この薬は大きくて、（　）にくいです。",
+      "choices": ["飲み", "飲む", "飲んで", "飲もう"],
+      "answer_index": 0,
+      "explanation_id": "masu-stem + にくい = sulit di-: 飲みにくい = sulit diminum."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "きのうは（　）すぎて、おなかが痛くなりました。",
+      "choices": ["食べる", "食べて", "食べ", "食べた"],
+      "answer_index": 2,
+      "explanation_id": "masu-stem + すぎる = terlalu: 食べすぎる = makan terlalu banyak."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "この漢字の（　）方を教えてください。",
+      "choices": ["読む", "読み", "読んで", "読める"],
+      "answer_index": 1,
+      "explanation_id": "masu-stem + 方（かた） = cara: 読み方 = cara membaca."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "会議の前に、資料をコピーして（　）ます。",
+      "choices": ["み", "しまい", "あげ", "おき"],
+      "answer_index": 3,
+      "explanation_id": "「〜ておく」 = menyiapkan lebih dulu: コピーしておきます."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "大切な書類をなくして（　）ました。すみません。",
+      "choices": ["しまい", "おき", "み", "いき"],
+      "answer_index": 0,
+      "explanation_id": "「〜てしまう」 menyatakan penyesalan: なくしてしまいました = (sayangnya) hilang."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "新しい機械の使い方がわかりません。ちょっとやって（　）もいいですか。",
+      "choices": ["おいて", "しまって", "みて", "いって"],
+      "answer_index": 2,
+      "explanation_id": "「〜てみる」 = mencoba: やってみてもいいですか = boleh saya coba?"
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "先生が私に日本の歌を教えて（　）ました。",
+      "choices": ["あげ", "くれ", "もらい", "やり"],
+      "answer_index": 1,
+      "explanation_id": "Orang lain berbuat baik kepada saya: （先生が）〜てくれました."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "私は先輩に仕事のやり方を教えて（　）ました。",
+      "choices": ["くれ", "あげ", "もらい", "しまい"],
+      "answer_index": 2,
+      "explanation_id": "私は + orang lain + に + 〜てもらいました = saya menerima bantuan dari orang itu."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "電車の中で、となりの人に足を（　）ました。",
+      "choices": ["踏み", "踏ませ", "踏め", "踏まれ"],
+      "answer_index": 3,
+      "explanation_id": "Bentuk pasif 踏まれる = diinjak: 足を踏まれました = kaki saya terinjak."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "寝る（　）に、歯をみがきます。",
+      "choices": ["まえ", "あと", "あいだ", "ながら"],
+      "answer_index": 0,
+      "explanation_id": "bentuk kamus + まえに = sebelum: 寝るまえに = sebelum tidur."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "仕事が終わった（　）で、買い物に行きます。",
+      "choices": ["まえ", "あと", "うち", "つぎ"],
+      "answer_index": 1,
+      "explanation_id": "「〜たあとで」 = setelah: 終わったあとで = setelah selesai."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "毎日練習して、日本語が話せる（　）なりました。",
+      "choices": ["ように", "ことに", "そうに", "ために"],
+      "answer_index": 0,
+      "explanation_id": "「〜ようになる」 = menjadi bisa (perubahan kemampuan): 話せるようになりました."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "あしたは休みですから、早く（　）なくてもいいです。",
+      "choices": ["起きる", "起きて", "起き", "起きた"],
+      "answer_index": 2,
+      "explanation_id": "「〜なくてもいいです」 = tidak perlu: 起きなくてもいいです = tidak perlu bangun."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "バスより電車の（　）が速いです。",
+      "choices": ["こと", "ほう", "もの", "ところ"],
+      "answer_index": 1,
+      "explanation_id": "Perbandingan AよりBのほうが〜 = B lebih ... daripada A."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "日本で働く（　）に、毎日日本語を勉強しています。",
+      "choices": ["ところ", "こと", "よう", "ため"],
+      "answer_index": 3,
+      "explanation_id": "bentuk kamus + ために = untuk (tujuan): 働くために = untuk bekerja."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "あれ、部屋のドアが（　）いますよ。",
+      "choices": ["開けて", "開いて", "開かれて", "開けさせて"],
+      "answer_index": 1,
+      "explanation_id": "Kata kerja intransitif 開く + ている = keadaan terbuka: 開いています."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "田中さんは今日は来ない（　）です。さっき「休みます」と連絡がありましたから。",
+      "choices": ["はず", "つもり", "ため", "ところ"],
+      "answer_index": 0,
+      "explanation_id": "「〜はずです」 = seharusnya / pasti (dugaan kuat karena ada alasan)."
+    },
+    {
+      "section": "grammar",
+      "level": "JFT-Basic",
+      "question": "すみません、もう一度ゆっくり話して（　）ませんか。",
+      "choices": ["さしあげ", "いたし", "いただけ", "なり"],
+      "answer_index": 2,
+      "explanation_id": "「〜ていただけませんか」 = permintaan yang sangat sopan."
+    },
+    {
+      "section": "grammar",
+      "level": "JFT-Basic",
+      "question": "気分が悪いので、すみませんが、今日は早く（　）いただけませんか。",
+      "choices": ["帰られて", "帰らせて", "帰って", "帰れて"],
+      "answer_index": 1,
+      "explanation_id": "Bentuk kausatif + ていただけませんか = meminta izin melakukan sesuatu: 帰らせていただけませんか."
+    },
+    {
+      "section": "grammar",
+      "level": "JFT-Basic",
+      "question": "社長は3時に（　）になります。",
+      "choices": ["お帰り", "帰り", "お帰りして", "帰るの"],
+      "answer_index": 0,
+      "explanation_id": "Sonkeigo (hormat) お + masu-stem + になります: お帰りになります."
+    },
+    {
+      "section": "grammar",
+      "level": "JFT-Basic",
+      "question": "「山田さんはいらっしゃいますか。」「すみません、山田はただいま席を（　）おります。」",
+      "choices": ["はずされて", "おはずしに", "はずして", "はずさせて"],
+      "answer_index": 2,
+      "explanation_id": "席をはずしております = ungkapan kantor (kenjougo): sedang tidak berada di tempat."
+    },
+    {
+      "section": "grammar",
+      "level": "JFT-Basic",
+      "question": "荷物が重そうですね。（　）ましょうか。",
+      "choices": ["持ち", "持って", "持た", "持てる"],
+      "answer_index": 0,
+      "explanation_id": "「〜ましょうか」 menawarkan bantuan: 持ちましょうか = mau saya bawakan?"
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "このボタンを（　）と、お湯が出ます。",
+      "choices": ["押して", "押す", "押した", "押そう"],
+      "answer_index": 1,
+      "explanation_id": "bentuk kamus + と = kalau ... pasti (hasil otomatis): 押すと、お湯が出ます."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "時間が（　）ば、あとで電話をください。",
+      "choices": ["ある", "あった", "あって", "あれ"],
+      "answer_index": 3,
+      "explanation_id": "Kondisional ば: ある → あれば = kalau ada."
+    },
+    {
+      "section": "grammar",
+      "level": "N4",
+      "question": "何か（　）ことがあったら、いつでも聞いてください。",
+      "choices": ["わからなくて", "わからないで", "わからない", "わかりません"],
+      "answer_index": 2,
+      "explanation_id": "Bentuk biasa + こと: わからないこと = hal yang tidak dimengerti."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "電車が来ます。黄色い線の内側に（　）ください。",
+      "choices": ["上がって", "曲がって", "下がって", "渡って"],
+      "answer_index": 2,
+      "explanation_id": "下がる = mundur. Pengumuman standar di stasiun: mundurlah ke belakang garis kuning."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "食事の準備をする前に、手を（　）ください。",
+      "choices": ["洗って", "掃除して", "浴びて", "磨いて"],
+      "answer_index": 0,
+      "explanation_id": "手を洗う = mencuci tangan. 磨く dipakai untuk gigi (歯を磨く)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "燃えるごみは、火曜日の朝に（　）ください。",
+      "choices": ["入れて", "出して", "拾って", "運んで"],
+      "answer_index": 1,
+      "explanation_id": "ごみを出す = mengeluarkan/membuang sampah (ungkapan tetap di Jepang)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "夜おそくに大きい声で話すと、となりの人に（　）がかかります。",
+      "choices": ["世話", "心配", "案内", "迷惑"],
+      "answer_index": 3,
+      "explanation_id": "迷惑をかける = merepotkan / mengganggu orang lain."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "電車が遅れて、仕事に（　）しそうです。",
+      "choices": ["遅刻", "残業", "出勤", "早退"],
+      "answer_index": 0,
+      "explanation_id": "遅刻する = datang terlambat. 残業 = lembur, 早退 = pulang lebih awal."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "問題が起きたら、すぐにリーダーに（　）してください。",
+      "choices": ["放送", "発表", "報告", "拍手"],
+      "answer_index": 2,
+      "explanation_id": "報告する = melapor. Bagian dari hourensou (報告・連絡・相談)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "あしたの会議の時間を（　）してもいいですか。",
+      "choices": ["訓練", "確認", "試験", "経験"],
+      "answer_index": 1,
+      "explanation_id": "確認する = memastikan / mengecek."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "12時から1時までは（　）です。ゆっくり休んでください。",
+      "choices": ["休憩", "休日", "欠席", "残業"],
+      "answer_index": 0,
+      "explanation_id": "休憩 = istirahat (waktu istirahat kerja). 休日 = hari libur."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "この牛乳は（　）が切れていますから、飲まないでください。",
+      "choices": ["営業時間", "予約", "受付", "賞味期限"],
+      "answer_index": 3,
+      "explanation_id": "賞味期限 = batas waktu rasa terbaik (tanggal kedaluwarsa makanan)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "熱があるかどうか、（　）を測ります。",
+      "choices": ["身長", "体温", "体力", "気温"],
+      "answer_index": 1,
+      "explanation_id": "体温 = suhu tubuh. 気温 = suhu udara."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "床がぬれていて（　）ですから、気をつけてください。",
+      "choices": ["危ない", "汚い", "暗い", "狭い"],
+      "answer_index": 0,
+      "explanation_id": "危ない = berbahaya."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "工場に入る前に、マスクを（　）ください。",
+      "choices": ["はいて", "かぶって", "つけて", "しめて"],
+      "answer_index": 2,
+      "explanation_id": "マスクをつける = memakai masker. はく untuk celana/sepatu, かぶる untuk topi."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "この薬は、食事の（　）に飲んでください。",
+      "choices": ["となり", "あと", "うしろ", "そば"],
+      "answer_index": 1,
+      "explanation_id": "食事のあとに = setelah makan. となり／うしろ／そば dipakai untuk tempat."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "部屋を出るときは、電気を（　）ください。",
+      "choices": ["閉めて", "止めて", "拭いて", "消して"],
+      "answer_index": 3,
+      "explanation_id": "電気を消す = mematikan lampu. 閉める untuk pintu/jendela."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "日本の夏はとても（　）です。",
+      "choices": ["蒸し暑い", "涼しい", "冷たい", "温かい"],
+      "answer_index": 0,
+      "explanation_id": "蒸し暑い = panas dan lembap (khas musim panas Jepang)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "東京駅で新幹線に（　）ます。",
+      "choices": ["乗り出し", "乗り換え", "乗り越え", "乗せ"],
+      "answer_index": 1,
+      "explanation_id": "乗り換える = pindah kereta/kendaraan (transit)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "大きい荷物は、駅のロッカーに（　）ことができます。",
+      "choices": ["借りる", "拾う", "預ける", "返す"],
+      "answer_index": 2,
+      "explanation_id": "預ける = menitipkan (barang/uang)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "かぜをひいたので、（　）へ行って、薬をもらいました。",
+      "choices": ["病院", "銀行", "郵便局", "空港"],
+      "answer_index": 0,
+      "explanation_id": "病院 = rumah sakit."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "誕生日に友だちから（　）をもらいました。",
+      "choices": ["レシート", "アルバイト", "スケジュール", "プレゼント"],
+      "answer_index": 3,
+      "explanation_id": "プレゼント = hadiah."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "新しい仕事に、だんだん（　）ました。",
+      "choices": ["汚れ", "慣れ", "触れ", "倒れ"],
+      "answer_index": 1,
+      "explanation_id": "慣れる = menjadi terbiasa: 仕事に慣れる."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "約束の時間に（　）ように、早めに家を出ました。",
+      "choices": ["間に合う", "間違える", "見つかる", "片づける"],
+      "answer_index": 0,
+      "explanation_id": "間に合う = sempat / tidak terlambat."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "わからない言葉があったら、辞書で（　）ます。",
+      "choices": ["数え", "比べ", "調べ", "並べ"],
+      "answer_index": 2,
+      "explanation_id": "調べる = mencari tahu / memeriksa."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "昼ごはんは、会社の（　）で食べます。",
+      "choices": ["受付", "食堂", "会議室", "玄関"],
+      "answer_index": 1,
+      "explanation_id": "食堂 = kantin / ruang makan."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "雨の日は、ゆかが（　）やすいので、ゆっくり歩いてください。",
+      "choices": ["すべり", "ならび", "さわり", "たたみ"],
+      "answer_index": 0,
+      "explanation_id": "すべる = tergelincir / licin: すべりやすい = mudah tergelincir."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "使った道具は、もとの場所に（　）ください。",
+      "choices": ["直して", "帰って", "返事して", "戻して"],
+      "answer_index": 3,
+      "explanation_id": "戻す = mengembalikan ke tempat semula."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "熱が38度あります。（　）をひいたかもしれません。",
+      "choices": ["けが", "かぜ", "むし歯", "ねつ"],
+      "answer_index": 1,
+      "explanation_id": "かぜをひく = terkena flu / masuk angin (ungkapan tetap)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "階段から落ちて、足に（　）をしました。",
+      "choices": ["かぜ", "ねつ", "けが", "せき"],
+      "answer_index": 2,
+      "explanation_id": "けがをする = terluka."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "車いすを（　）ときは、ゆっくり進みます。",
+      "choices": ["押す", "投げる", "拾う", "運ぶ"],
+      "answer_index": 0,
+      "explanation_id": "車いすを押す = mendorong kursi roda."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "寒いですから、コートを（　）出かけましょう。",
+      "choices": ["はいて", "着て", "かぶって", "しめて"],
+      "answer_index": 1,
+      "explanation_id": "着る dipakai untuk baju/jaket bagian atas: コートを着る."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "寮の部屋は、いつも（　）にしておきましょう。",
+      "choices": ["じょうぶ", "にぎやか", "べんり", "きれい"],
+      "answer_index": 3,
+      "explanation_id": "きれいにする = membersihkan / merapikan."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "国の家族に、日本語で手紙を（　）ました。",
+      "choices": ["書き", "引き", "貼り", "消し"],
+      "answer_index": 0,
+      "explanation_id": "手紙を書く = menulis surat."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "この道をまっすぐ行って、次の角を右に（　）ください。",
+      "choices": ["渡って", "通って", "曲がって", "走って"],
+      "answer_index": 2,
+      "explanation_id": "曲がる = belok: 右に曲がる = belok kanan."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "ゆうべおそくまで起きていたので、今朝はなかなか（　）ませんでした。",
+      "choices": ["寝られ", "起きられ", "食べられ", "帰られ"],
+      "answer_index": 1,
+      "explanation_id": "起きられない = tidak bisa bangun (bentuk potensial + negatif)."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "図書館の中では、（　）にしてください。",
+      "choices": ["静か", "にぎやか", "簡単", "大切"],
+      "answer_index": 0,
+      "explanation_id": "静かにする = tenang / tidak berisik."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "来月、（　）して、家族に会います。",
+      "choices": ["入学", "退院", "帰国", "見学"],
+      "answer_index": 2,
+      "explanation_id": "帰国する = pulang ke negara asal."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "お客様には、（　）であいさつをしましょう。",
+      "choices": ["泣き顔", "笑顔", "横顔", "似顔"],
+      "answer_index": 1,
+      "explanation_id": "笑顔 = wajah tersenyum: 笑顔であいさつ = menyapa dengan senyum."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "仕事が終わったら、タイムカードを（　）ます。",
+      "choices": ["消し", "折り", "破り", "押し"],
+      "answer_index": 3,
+      "explanation_id": "タイムカードを押す = mencatat jam kerja dengan kartu absen."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "買ってきた肉と魚は、すぐ冷蔵庫に（　）ます。",
+      "choices": ["入れ", "出し", "掛け", "乗せ"],
+      "answer_index": 0,
+      "explanation_id": "入れる = memasukkan: 冷蔵庫に入れる."
+    },
+    {
+      "section": "vocabulary",
+      "level": "JFT-Basic",
+      "question": "アルバイトの（　）で、家族におみやげを買いました。",
+      "choices": ["値段", "料金", "給料", "会費"],
+      "answer_index": 2,
+      "explanation_id": "給料 = gaji. 値段 = harga barang, 料金 = tarif."
+    },
+    {
+      "section": "vocabulary",
+      "level": "N4",
+      "question": "電車の中に、かさを（　）しまいました。",
+      "choices": ["借りて", "忘れて", "数えて", "届けて"],
+      "answer_index": 1,
+      "explanation_id": "忘れる = lupa membawa / tertinggal: かさを忘れました."
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "あしたの授業について、正しいものはどれですか。",
+      "choices": [
+        "時間が9時から10時に変わる",
+        "教室が301教室に変わる",
+        "授業が休みになる",
+        "先生が変わる"
+      ],
+      "answer_index": 1,
+      "explanation_id": "Yang berubah hanya ruang kelas (201 → 301). Waktunya tetap jam 9.",
+      "meta": {
+        "passage_ja": "明日の日本語の授業は、教室が変わります。いつもは2階の201教室ですが、明日は3階の301教室で行います。時間はいつもと同じ9時からです。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "佐藤さんは、何のために電話をしましたか。",
+      "choices": [
+        "エアコンの見積もりができたことを伝えるため",
+        "エアコンが壊れたことを伝えるため",
+        "会議の時間を変えるため",
+        "山田さんに会う約束をするため"
+      ],
+      "answer_index": 0,
+      "explanation_id": "Pesan tertulis: 「新しいエアコンの見積もりができたそうです」= penawaran harga AC sudah jadi.",
+      "meta": {
+        "passage_ja": "山田さんへ　今日の午後、田中電気の佐藤さんから電話がありました。新しいエアコンの見積もりができたそうです。明日の午前中に、もう一度電話をくれるそうです。リナ"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "掃除に参加できない人は、どうしますか。",
+      "choices": [
+        "土曜日の朝に管理人に言う",
+        "参加しなくてもいい",
+        "金曜日までに管理人に言う",
+        "ほかの日に一人で掃除する"
+      ],
+      "answer_index": 2,
+      "explanation_id": "Pengumuman: yang tidak bisa ikut harus memberi tahu pengelola paling lambat hari Jumat.",
+      "meta": {
+        "passage_ja": "寮のみなさんへ　今週の土曜日の午前10時から、寮の掃除をします。全員参加してください。用事があって参加できない人は、金曜日までに管理人に言ってください。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "水曜日に出せるごみはどれですか。",
+      "choices": ["燃えるごみ", "古い服", "新聞紙", "びんとかん"],
+      "answer_index": 3,
+      "explanation_id": "Sampah bakar hari Selasa dan Jumat, botol dan kaleng hari Rabu.",
+      "meta": {
+        "passage_ja": "このアパートでは、燃えるごみは火曜日と金曜日の朝8時までに出してください。びんとかんは水曜日です。夜にごみを出してはいけません。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "作業場に入る前に、しなければならないことはどれですか。",
+      "choices": [
+        "時計と指輪をつける",
+        "手を洗って消毒する",
+        "作業場のそうじをする",
+        "リーダーに報告する"
+      ],
+      "answer_index": 1,
+      "explanation_id": "Aturan pabrik: cuci tangan lalu disinfeksi dengan alkohol sebelum bekerja. Cincin dan jam justru dilarang.",
+      "meta": {
+        "passage_ja": "作業を始める前に、必ず手を洗って、アルコールで消毒してください。指輪や時計をつけたまま、作業場に入ってはいけません。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "変わったのはどれですか。",
+      "choices": ["練習の時間", "練習の場所", "練習の先生", "面接の日"],
+      "answer_index": 0,
+      "explanation_id": "Latihan wawancara pindah dari jam 2 ke jam 3. Tempatnya tetap sama.",
+      "meta": {
+        "passage_ja": "リナさん　あしたの面接の練習ですが、先生の都合で、2時から3時に変わりました。場所はいつもと同じ会議室です。よろしくお願いします。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "この人はどうして朝、勉強しますか。",
+      "choices": [
+        "朝ごはんの前に勉強したいから",
+        "学校が朝早く始まるから",
+        "夜は疲れて勉強できないから",
+        "朝は日本語の放送があるから"
+      ],
+      "answer_index": 2,
+      "explanation_id": "Alasannya tertulis: 「夜は疲れて勉強できないからです」.",
+      "meta": {
+        "passage_ja": "わたしは毎朝6時に起きて、30分日本語を勉強します。夜は疲れて勉強できないからです。朝のほうが静かで、よく覚えられます。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "今日の天気について、正しいものはどれですか。",
+      "choices": ["一日中晴れる", "午後から雨が降る", "午前中に風が強くなる", "夜に雪が降る"],
+      "answer_index": 1,
+      "explanation_id": "Pagi cerah, tetapi sore mulai hujan. Angin kencang baru malam hari.",
+      "meta": {
+        "passage_ja": "今日は午前中は晴れますが、午後から雨が降るでしょう。夜は風も強くなりますから、出かける人は気をつけてください。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "店が休みなのはいつですか。",
+      "choices": ["月曜日だけ", "水曜日から金曜日まで", "来週ずっと", "月曜日から水曜日まで"],
+      "answer_index": 3,
+      "explanation_id": "Toko tutup Senin sampai Rabu karena renovasi, buka lagi hari Kamis.",
+      "meta": {
+        "passage_ja": "いつもありがとうございます。当店は、来週の月曜日から水曜日まで、店内工事のためお休みします。木曜日からは、いつもどおり午前10時に開店します。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "この人はどうして看護師に報告しましたか。",
+      "choices": [
+        "佐藤さんに少し熱があったから",
+        "佐藤さんが朝ごはんを食べなかったから",
+        "佐藤さんが転んだから",
+        "佐藤さんの薬がなくなったから"
+      ],
+      "answer_index": 0,
+      "explanation_id": "Sore hari Sato-san agak demam, jadi dilaporkan ke perawat.",
+      "meta": {
+        "passage_ja": "今日の佐藤さんは、朝ごはんを全部食べました。でも、昼ごはんはあまり食べませんでした。夕方、少し熱があったので、看護師に報告しました。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "この人はどうして会社に電話をしましたか。",
+      "choices": [
+        "仕事を休みたかったから",
+        "課長と話したかったから",
+        "会社に遅れそうだったから",
+        "電車の事故を見たから"
+      ],
+      "answer_index": 2,
+      "explanation_id": "Karena hampir terlambat, ia menelepon kantor dan menjelaskan alasannya (renraku dalam hourensou).",
+      "meta": {
+        "passage_ja": "今朝、事故で電車が30分止まりました。わたしは会社に遅れそうだったので、駅から会社に電話をして、理由を説明しました。課長は「わかりました。気をつけて来てください」と言いました。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "この人が買ったものはどれですか。",
+      "choices": ["卵と牛乳", "牛乳2本", "卵だけ", "何も買わなかった"],
+      "answer_index": 1,
+      "explanation_id": "Telur habis terjual, jadi hanya membeli 2 botol susu.",
+      "meta": {
+        "passage_ja": "スーパーで卵と牛乳を買うつもりでしたが、卵は売り切れでした。牛乳はいつもより安かったので、2本買いました。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "CDは何日間借りることができますか。",
+      "choices": ["1週間", "2週間", "3日間", "1か月"],
+      "answer_index": 0,
+      "explanation_id": "Buku 2 minggu, CD 1 minggu.",
+      "meta": {
+        "passage_ja": "この図書館では、本を2週間借りることができます。CDは1週間です。返す日に遅れるときは、電話で連絡してください。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "研修の日に持って行くものはどれですか。",
+      "choices": ["昼ごはん", "作業服", "会社の地図", "筆記用具"],
+      "answer_index": 3,
+      "explanation_id": "Pengumuman: bawa alat tulis (筆記用具). Makan siang disiapkan perusahaan.",
+      "meta": {
+        "passage_ja": "新しく入った人は、来週の月曜日に安全研修を受けてください。研修は午前9時から12時までです。筆記用具を持ってきてください。昼ごはんは会社が用意します。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "このメッセージの内容と合っているものはどれですか。",
+      "choices": [
+        "今晩レストランに行く",
+        "11時半に駅で会う予定だ",
+        "レストランを予約した",
+        "昼ごはんは駅で食べる"
+      ],
+      "answer_index": 1,
+      "explanation_id": "Karena siang ramai, janjian bertemu di stasiun jam 11.30.",
+      "meta": {
+        "passage_ja": "あした、駅前の新しいレストランに行きませんか。昼は混みますから、11時半に駅で会いましょう。都合が悪かったら、今晩までに返事をください。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "この病院について、正しいものはどれですか。",
+      "choices": [
+        "日曜日も開いている",
+        "予約がないと見てもらえない",
+        "土曜日は午前中だけ開いている",
+        "平日は午後8時まで開いている"
+      ],
+      "answer_index": 2,
+      "explanation_id": "Hari kerja sampai jam 18, Sabtu hanya pagi, Minggu dan hari libur tutup. Tanpa reservasi tetap bisa diperiksa.",
+      "meta": {
+        "passage_ja": "この病院は、平日は午後6時まで、土曜日は午前中だけ開いています。日曜日と祝日は休みです。予約がなくても見てもらえますが、待ち時間が長くなることがあります。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "この人の楽しみは何ですか。",
+      "choices": [
+        "休みの日に友だちと料理を作って食べること",
+        "家族と晩ごはんを食べること",
+        "一人でゆっくり食べること",
+        "日本料理の店に行くこと"
+      ],
+      "answer_index": 0,
+      "explanation_id": "Kalimat terakhir: memasak dan makan bersama teman di hari libur adalah hal yang dinanti-nanti.",
+      "meta": {
+        "passage_ja": "わたしの国では、家族といっしょに晩ごはんを食べる人が多いです。日本に来てからは一人で食べることが多くて、少しさびしいです。でも、休みの日は友だちと料理を作って食べます。それがとても楽しみです。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "N4",
+      "question": "今までのミーティングは何時から始まっていましたか。",
+      "choices": ["8時40分", "9時", "8時50分", "9時10分"],
+      "answer_index": 1,
+      "explanation_id": "Mulai bulan depan jam 8.50, yaitu 10 menit lebih awal. Berarti selama ini jam 9.",
+      "meta": {
+        "passage_ja": "来月から、朝のミーティングは8時50分に始めます。今までより10分早くなります。遅れないでください。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "切符を買うとき、最初に何をしますか。",
+      "choices": ["お金を入れる", "行き先のボタンを押す", "切符を取る", "お釣りを取る"],
+      "answer_index": 0,
+      "explanation_id": "Urutannya: masukkan uang → tekan tombol tujuan → ambil tiket dan kembalian.",
+      "meta": {
+        "passage_ja": "切符を買うときは、まずお金を入れて、次に行き先のボタンを押します。最後に、切符とお釣りを忘れないで取ってください。"
+      }
+    },
+    {
+      "section": "reading",
+      "level": "JFT-Basic",
+      "question": "仕事が終わって先に帰るとき、何と言いますか。",
+      "choices": [
+        "「いらっしゃいませ」",
+        "「おかえりなさい」",
+        "「いってきます」",
+        "「お先に失礼します」"
+      ],
+      "answer_index": 3,
+      "explanation_id": "Di perusahaan Jepang, sebelum pulang lebih dulu ucapkan 「お先に失礼します」.",
+      "meta": {
+        "passage_ja": "日本の会社では、仕事が終わっても、周りの人がまだ働いているとき、「お先に失礼します」と言ってから帰ります。何も言わないで帰ると、失礼だと思われることがあります。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "N4",
+      "question": "音声の内容と合っているものはどれですか。",
+      "choices": [
+        "かさを持って帰ったほうがいい",
+        "午前中に雨が降る",
+        "今日は一日晴れる",
+        "すぐに帰らなければならない"
+      ],
+      "answer_index": 0,
+      "explanation_id": "Karena sore akan hujan, disuruh membawa payung saat pulang.",
+      "meta": {
+        "script_ja": "みなさん、おはようございます。今日は午後から雨が降りますから、かさを持って帰ってください。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "田中さんは、このあと何をしますか。",
+      "choices": [
+        "会議の時間を変える",
+        "書類を10枚書く",
+        "書類を10部コピーする",
+        "会議室を予約する"
+      ],
+      "answer_index": 2,
+      "explanation_id": "Permintaannya: fotokopi dokumen 10 rangkap untuk rapat.",
+      "meta": {
+        "script_ja": "田中さん、すみませんが、この書類を10部コピーしてください。会議で使います。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "バスに乗り換える人は、どうしますか。",
+      "choices": ["右側の出口を出る", "2番出口を使う", "次の駅まで行く", "階段を上がる"],
+      "answer_index": 1,
+      "explanation_id": "Pengumuman kereta: yang mau pindah ke bus, gunakan pintu keluar nomor 2.",
+      "meta": {
+        "script_ja": "次は、さくら駅、さくら駅です。出口は右側です。バスにお乗り換えの方は、2番出口をご利用ください。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "今日の昼休みは、何時からですか。",
+      "choices": ["11時半から", "12時から", "1時から", "12時半から"],
+      "answer_index": 3,
+      "explanation_id": "Karena kantin ramai, istirahat siang diubah menjadi mulai jam 12.30.",
+      "meta": {
+        "script_ja": "今日の昼休みは、食堂が混んでいますから、12時半からにしましょう。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "頼まれたことはどれですか。",
+      "choices": [
+        "ごみの袋を取り替えて、窓を開ける",
+        "部屋のそうじきをかける",
+        "ごみ箱を新しく買う",
+        "窓を閉めて、ごみを捨てる"
+      ],
+      "answer_index": 0,
+      "explanation_id": "Dua permintaan: ganti kantong sampah dan buka jendela sedikit.",
+      "meta": {
+        "script_ja": "佐藤さんの部屋のごみ箱がいっぱいですから、新しい袋に取り替えてください。それから、窓を少し開けてください。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "あしたの朝、まずどこに集まりますか。",
+      "choices": ["工場", "事務所", "駅", "食堂"],
+      "answer_index": 1,
+      "explanation_id": "Kumpul dulu di kantor jam 9, lalu bersama-sama pergi ke pabrik.",
+      "meta": {
+        "script_ja": "あしたの朝は9時に事務所に集まってください。それから、みんなで工場に行きます。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "この人は、何をしてほしいと言っていますか。",
+      "choices": [
+        "機械を新しく買ってほしい",
+        "音を小さくしてほしい",
+        "機械を見てほしい",
+        "機械を止めてほしい"
+      ],
+      "answer_index": 2,
+      "explanation_id": "Mesin bunyinya aneh, jadi ia minta tolong diperiksa (相談 dalam hourensou).",
+      "meta": {
+        "script_ja": "すみません、この機械の調子が悪いんですが、見ていただけませんか。変な音がします。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "音声の内容と合っているものはどれですか。",
+      "choices": [
+        "金曜日は給料日だ",
+        "給料は銀行で受け取る",
+        "明細は郵便で届く",
+        "今週は給料が出ない"
+      ],
+      "answer_index": 0,
+      "explanation_id": "Jumat minggu ini adalah hari gajian. Slip gaji diambil di kantor.",
+      "meta": {
+        "script_ja": "今週の金曜日は給料日です。給料の明細は事務所で渡しますから、取りに来てください。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "スープはどうしますか。",
+      "choices": ["すぐにお客様に出す", "温めてから出す", "冷蔵庫に入れる", "5分待ってから出す"],
+      "answer_index": 3,
+      "explanation_id": "Karena masih panas, tunggu 5 menit dulu baru dihidangkan.",
+      "meta": {
+        "script_ja": "熱いですから、このスープはすぐに運ばないでください。5分待ってから、お客様に出してください。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "山田さんは、どうして電話をしましたか。",
+      "choices": [
+        "道に迷ったから",
+        "遅刻しそうだから",
+        "電車の切符をなくしたから",
+        "会社を休みたいから"
+      ],
+      "answer_index": 1,
+      "explanation_id": "Kereta terlambat sehingga ia mungkin datang terlambat, jadi menelepon lebih dulu (renraku).",
+      "meta": {
+        "script_ja": "山田です。今、駅に着きましたが、電車が遅れていて、少し遅刻しそうです。すみませんが、よろしくお願いします。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "JFT-Basic",
+      "question": "熱が高いとき、どうしますか。",
+      "choices": [
+        "短い時間だけお風呂に入る",
+        "薬を飲んでからお風呂に入る",
+        "お風呂に入らないで、職員に言う",
+        "水のシャワーを浴びる"
+      ],
+      "answer_index": 2,
+      "explanation_id": "Kalau demam tinggi, jangan mandi berendam dan laporkan ke petugas.",
+      "meta": {
+        "script_ja": "お風呂に入る前に、必ず体温を測ってください。熱が高いときは、入らないで、職員に言ってください。"
+      }
+    },
+    {
+      "section": "listening",
+      "level": "N4",
+      "question": "学校が休みなのはいつですか。",
+      "choices": ["来週の月曜日", "来週の火曜日", "今週の金曜日", "来週ずっと"],
+      "answer_index": 0,
+      "explanation_id": "Senin depan hari libur nasional, jadi sekolah libur. Selasa masuk seperti biasa.",
+      "meta": {
+        "script_ja": "来週の月曜日は祝日ですから、学校は休みです。火曜日はいつもどおり授業がありますから、遅れないで来てください。"
+      }
+    }
+  ]
+}

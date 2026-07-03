@@ -5,9 +5,11 @@ from app.config import get_settings
 from app.routers import (
     auth,
     conversation,
+    drill,
     health,
     interview,
     me,
+    mock,
     passport,
     share,
     speech,
@@ -32,6 +34,8 @@ app.include_router(me.router)
 app.include_router(students.router)
 app.include_router(speech.router)
 app.include_router(conversation.router)
+app.include_router(drill.router)
+app.include_router(mock.router)
 app.include_router(interview.router)
 app.include_router(passport.router)
 app.include_router(share.router)

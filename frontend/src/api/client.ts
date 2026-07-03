@@ -410,6 +410,99 @@ export interface Streak {
   active_today: boolean;
 }
 
+export type QuizSection = "grammar" | "vocabulary" | "reading" | "listening";
+
+// 出題用の問題。answer_index / explanation_id は解答後のレスポンスにのみ含まれる。
+// script_ja は聴解のみ。stub モードで browser TTS の読み上げに使う（画面には出さない）。
+export interface QuizItem {
+  item_id: number;
+  section: QuizSection;
+  level: string;
+  question: string;
+  choices: string[];
+  passage_ja: string | null;
+  script_ja: string | null;
+  is_review: boolean;
+}
+
+export interface DailyQuiz {
+  items: QuizItem[];
+  review_count: number;
+}
+
+export interface QuizAnswerResult {
+  is_correct: boolean;
+  correct_index: number;
+  explanation_id: string | null;
+}
+
+export interface MockExam {
+  items: QuizItem[];
+  num_questions: number;
+}
+
+export interface MockQuestionResult {
+  item_id: number;
+  is_correct: boolean;
+  correct_index: number;
+  explanation_id: string | null;
+}
+
+export interface MockResult {
+  mock_id: number;
+  score: number;
+  num_questions: number;
+  num_correct: number;
+  band: string | null;
+  results: MockQuestionResult[];
+}
+
+export interface MockHistoryItem {
+  mock_id: number;
+  score: number;
+  num_questions: number;
+  num_correct: number;
+  created_at: string;
+}
+
+export function getDailyQuiz(): Promise<DailyQuiz> {
+  return get<DailyQuiz>("/drill/daily");
+}
+
+export function postDrillAnswer(
+  itemId: number,
+  selectedIndex: number,
+): Promise<QuizAnswerResult> {
+  return post<QuizAnswerResult>("/drill/answers", {
+    item_id: itemId,
+    selected_index: selectedIndex,
+  });
+}
+
+export function getMockExam(): Promise<MockExam> {
+  return get<MockExam>("/mock/exam");
+}
+
+export function submitMockExam(
+  answers: { item_id: number; selected_index: number }[],
+): Promise<MockResult> {
+  return post<MockResult>("/mock/submit", { answers });
+}
+
+export function getMockHistory(): Promise<MockHistoryItem[]> {
+  return get<MockHistoryItem[]>("/mock/history");
+}
+
+// 聴解問題の合成音声。stub モードはサーバ音声なし(204)で null を返す（呼び出し側で browser TTS）。
+export async function getMockListeningAudio(itemId: number): Promise<Blob | null> {
+  const res = await fetch(`${BASE}/mock/items/${itemId}/audio`);
+  if (res.status === 204) return null;
+  if (!res.ok) {
+    throw new ApiError(res.status, `GET listening audio failed: ${res.status}`);
+  }
+  return await res.blob();
+}
+
 export function getScenarios(): Promise<Scenario[]> {
   return get<Scenario[]>("/conversation/scenarios");
 }

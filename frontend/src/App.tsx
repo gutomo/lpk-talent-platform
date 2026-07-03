@@ -4,8 +4,10 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { getMe, logout, type Role, type User } from "./api/client";
 import { setLocale, t } from "./i18n";
 import ConversationPage from "./pages/ConversationPage";
+import DrillPage from "./pages/DrillPage";
 import InterviewPage from "./pages/InterviewPage";
 import LoginPage from "./pages/LoginPage";
+import MockExamPage from "./pages/MockExamPage";
 import PronunciationPage from "./pages/PronunciationPage";
 import SharePassportPage from "./pages/SharePassportPage";
 import StudentHomePage from "./pages/StudentHomePage";
@@ -108,6 +110,22 @@ export default function App() {
           element={
             <RoleRoute user={user} roles={["student"]}>
               <InterviewPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/student/drill"
+          element={
+            <RoleRoute user={user} roles={["student"]}>
+              <DrillPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/student/mock"
+          element={
+            <RoleRoute user={user} roles={["student"]}>
+              <MockExamPage user={user as User} onLogout={handleLogout} />
             </RoleRoute>
           }
         />

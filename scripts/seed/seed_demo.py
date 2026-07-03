@@ -34,7 +34,7 @@ def main() -> None:
         summary = seed_all(db, now=datetime.now(UTC))
 
     print("seeded:")
-    for key in ("organizations", "teachers", "admins", "students", "content_items"):
+    for key in ("organizations", "teachers", "admins", "students", "content_items", "quiz_items"):
         print(f"  {key}: {summary[key]}")
     print("demo accounts:")
     print(f"  student: {summary['demo_student_email']} / {STUDENT_PASSWORD}")
