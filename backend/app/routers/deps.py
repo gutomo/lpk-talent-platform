@@ -31,3 +31,14 @@ def require_role(*roles: UserRole) -> Callable[[User], User]:
         return user
 
     return check
+
+
+def org_student(db: Session, staff: User, student_id: int) -> User:
+    """自組織の学生のみ対象にする。他組織・非学生・不在は 404（存在秘匿）。
+
+    教師 / 管理者が特定の学生を操作する全エンドポイントで共有するアクセス制御。
+    """
+    student = db.get(User, student_id)
+    if student is None or student.role != UserRole.STUDENT or student.org_id != staff.org_id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Student not found")
+    return student

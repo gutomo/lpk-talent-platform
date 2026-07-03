@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { getStudents, type StudentListItem, type User } from "../api/client";
 import PageHeader from "../components/PageHeader";
@@ -69,7 +70,11 @@ export default function TeacherStudentsPage({
               <tbody>
                 {students.map((s) => (
                   <tr key={s.id}>
-                    <td style={cellStyle}>{s.name}</td>
+                    <td style={cellStyle}>
+                      <Link to={`/teacher/students/${s.id}`} style={{ color: "#1a5fb4" }}>
+                        {s.name}
+                      </Link>
+                    </td>
                     <td style={cellStyle}>{s.email}</td>
                     <td style={cellStyle}>{s.cohort_name ?? "-"}</td>
                     <td style={cellStyle}>{formatLastActive(s.last_active_at)}</td>

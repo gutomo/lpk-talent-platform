@@ -29,7 +29,7 @@ from app.models import (
     PronunciationAttempt,
     User,
 )
-from app.models.enums import Sector, SessionStatus, TurnRole
+from app.models.enums import AttendanceKind, Sector, SessionStatus, TurnRole
 
 SNAPSHOT_VERSION = "passport-v1"
 
@@ -227,19 +227,35 @@ def _japanese_level(db: Session, user_id: int) -> dict[str, Any]:
 
 
 def _attendance(db: Session, user_id: int) -> dict[str, Any]:
-    values = db.execute(
-        select(AttendanceRecord.value).where(AttendanceRecord.user_id == user_id)
-    ).scalars().all()
-    if not values:
+    """月単位に正規化した出席率。
+
+    月次行はその月の率、日次行（出席=100 / 欠席=0）は月内平均でその月の率に畳む。
+    粒度の違う行を素朴に平均すると日次1行が月次%と同じ重みになり、
+    混在時に率とリスクフラグが狂うため、必ず月に落としてから全月を平均する。
+    同じ月に月次と日次の両方があれば、kind ごとの率を平均する。
+    """
+    rows = db.execute(
+        select(AttendanceRecord.kind, AttendanceRecord.record_date, AttendanceRecord.value)
+        .where(AttendanceRecord.user_id == user_id)
+    ).all()
+    if not rows:
         return {"rate": None, "records": 0}
-    return {"rate": round(sum(values) / len(values)), "records": len(values)}
+    by_month_kind: dict[tuple[str, AttendanceKind], list[int]] = {}
+    for kind, record_date, value in rows:
+        by_month_kind.setdefault((record_date.strftime("%Y-%m"), kind), []).append(value)
+    month_rates: dict[str, list[float]] = {}
+    for (month, _kind), values in by_month_kind.items():
+        month_rates.setdefault(month, []).append(sum(values) / len(values))
+    rates = [sum(kind_rates) / len(kind_rates) for kind_rates in month_rates.values()]
+    return {"rate": round(sum(rates) / len(rates)), "records": len(rows)}
 
 
 def _attitude(db: Session, user_id: int) -> dict[str, Any] | None:
+    # 同一秒に複数レビューが入っても最新行が勝つよう id を第2キーにする。
     row = db.execute(
         select(AttitudeReview.checklist, AttitudeReview.note, AttitudeReview.created_at)
         .where(AttitudeReview.user_id == user_id)
-        .order_by(AttitudeReview.created_at.desc())
+        .order_by(AttitudeReview.created_at.desc(), AttitudeReview.id.desc())
         .limit(1)
     ).first()
     if row is None:

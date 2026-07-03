@@ -85,6 +85,114 @@ export function getStudents(): Promise<StudentListItem[]> {
   return get<StudentListItem[]>("/students");
 }
 
+export type AttendanceKind = "daily" | "monthly";
+
+export interface AttendanceRecord {
+  id: number;
+  kind: AttendanceKind;
+  record_date: string;
+  value: number;
+  note: string | null;
+}
+
+export interface PassportBrief {
+  version: number;
+  created_at: string;
+}
+
+// backend/app/services/records.py の ATTITUDE_ITEMS と同一キー・同一順。
+export const ATTITUDE_KEYS = [
+  "hourensou",
+  "punctuality",
+  "dormitory",
+  "manner",
+  "teamwork",
+] as const;
+
+export type AttitudeKey = (typeof ATTITUDE_KEYS)[number];
+
+export type AttitudeChecklist = Record<AttitudeKey, number>;
+
+// Passport snapshot（passport-v1）のうち詳細ページが読む部分だけを型に起こす。
+export interface StudentSummary {
+  snapshot_version: string;
+  generated_at: string;
+  japanese_level: {
+    current: string | null;
+    trend: { date: string; score: number }[];
+  };
+  pronunciation: {
+    attempts: number;
+    avg_accuracy: number | null;
+    weak_words: { word: string; count: number; min_accuracy: number }[];
+  };
+  conversation: { completed: number };
+  interview: {
+    sessions: number;
+    latest_total: number | null;
+    avg_total: number | null;
+    trend: { date: string; total: number }[];
+    transcript_excerpt: string[];
+  };
+  attendance: { rate: number | null; records: number };
+  attitude: {
+    checklist: Partial<AttitudeChecklist>;
+    note: string | null;
+    reviewed_at: string;
+  } | null;
+  checklist: { key: string; label_ja: string; done: boolean }[];
+  risk: { flags: string[]; level: "none" | "risk" };
+}
+
+export interface StudentDetail {
+  id: number;
+  name: string;
+  email: string;
+  cohort_name: string | null;
+  sector: Sector | null;
+  summary: StudentSummary;
+  attendance_records: AttendanceRecord[];
+  latest_passport: PassportBrief | null;
+}
+
+export interface AttendanceIn {
+  kind: AttendanceKind;
+  record_date: string;
+  value: number;
+  note: string | null;
+}
+
+export function getStudentDetail(studentId: number): Promise<StudentDetail> {
+  return get<StudentDetail>(`/students/${studentId}`);
+}
+
+export function postAttendance(
+  studentId: number,
+  body: AttendanceIn,
+): Promise<StudentDetail> {
+  return post<StudentDetail>(`/students/${studentId}/attendance`, body);
+}
+
+export function postAttitude(
+  studentId: number,
+  checklist: AttitudeChecklist,
+  note: string | null,
+): Promise<StudentDetail> {
+  return post<StudentDetail>(`/students/${studentId}/attitude`, { checklist, note });
+}
+
+export interface PassportOut {
+  passport_id: number;
+  user_id: number;
+  version: number;
+  created_at: string;
+  snapshot: StudentSummary;
+}
+
+export function generatePassport(studentId: number): Promise<PassportOut> {
+  return post<PassportOut>(`/passports/${studentId}`);
+}
+
 export type Sector = "kaigo" | "food_manufacturing" | "restaurant" | "general";
 
 export interface PronunciationItem {

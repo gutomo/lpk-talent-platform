@@ -8,6 +8,7 @@ import InterviewPage from "./pages/InterviewPage";
 import LoginPage from "./pages/LoginPage";
 import PronunciationPage from "./pages/PronunciationPage";
 import StudentHomePage from "./pages/StudentHomePage";
+import TeacherStudentDetailPage from "./pages/TeacherStudentDetailPage";
 import TeacherStudentsPage from "./pages/TeacherStudentsPage";
 
 function homePath(role: Role): string {
@@ -114,6 +115,14 @@ export default function App() {
           element={
             <RoleRoute user={user} roles={["teacher", "admin"]}>
               <TeacherStudentsPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/teacher/students/:studentId"
+          element={
+            <RoleRoute user={user} roles={["teacher", "admin"]}>
+              <TeacherStudentDetailPage user={user as User} onLogout={handleLogout} />
             </RoleRoute>
           }
         />
