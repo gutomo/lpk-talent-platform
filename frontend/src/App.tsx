@@ -11,6 +11,8 @@ import MockExamPage from "./pages/MockExamPage";
 import PronunciationPage from "./pages/PronunciationPage";
 import SharePassportPage from "./pages/SharePassportPage";
 import StudentHomePage from "./pages/StudentHomePage";
+import TeacherInterviewTranscriptPage from "./pages/TeacherInterviewTranscriptPage";
+import TeacherReviewQueuePage from "./pages/TeacherReviewQueuePage";
 import TeacherStudentDetailPage from "./pages/TeacherStudentDetailPage";
 import TeacherStudentsPage from "./pages/TeacherStudentsPage";
 
@@ -142,6 +144,22 @@ export default function App() {
           element={
             <RoleRoute user={user} roles={["teacher", "admin"]}>
               <TeacherStudentDetailPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/teacher/students/:studentId/interviews/:sessionId"
+          element={
+            <RoleRoute user={user} roles={["teacher", "admin"]}>
+              <TeacherInterviewTranscriptPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/teacher/review"
+          element={
+            <RoleRoute user={user} roles={["teacher", "admin"]}>
+              <TeacherReviewQueuePage user={user as User} onLogout={handleLogout} />
             </RoleRoute>
           }
         />

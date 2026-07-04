@@ -57,12 +57,21 @@ export interface User {
   locale: "id" | "ja";
 }
 
+export type RiskLevel = "none" | "risk";
+
 export interface StudentListItem {
   id: number;
   name: string;
   email: string;
   cohort_name: string | null;
   last_active_at: string | null;
+  // クラス一覧の進捗・アラート列（backend の dashboard.class_overview 集計）。
+  attendance_rate: number | null;
+  interview_sessions: number;
+  interview_latest_total: number | null;
+  pron_avg_accuracy: number | null;
+  risk_level: RiskLevel;
+  risk_flags: string[];
 }
 
 export function getHealth(): Promise<{ status: string }> {
@@ -171,6 +180,83 @@ export interface AttendanceIn {
 
 export function getStudentDetail(studentId: number): Promise<StudentDetail> {
   return get<StudentDetail>(`/students/${studentId}`);
+}
+
+export interface StudentInterviewItem {
+  session_id: number;
+  scenario: string;
+  title_ja: string | null;
+  mode: "text" | "voice";
+  total: number;
+  created_at: string;
+  reviewed_at: string | null;
+}
+
+export function getStudentInterviews(studentId: number): Promise<StudentInterviewItem[]> {
+  return get<StudentInterviewItem[]>(`/students/${studentId}/interviews`);
+}
+
+export interface TranscriptTurn {
+  seq: number;
+  role: "interviewer" | "candidate";
+  text_ja: string;
+}
+
+export interface TranscriptEvaluation {
+  evaluation_id: number;
+  rubric_version: string;
+  scores: Record<string, number>;
+  summary_ja: string | null;
+  summary_id: string | null;
+  total: number;
+  reviewed_at: string | null;
+  reviewer_name: string | null;
+}
+
+export interface InterviewTranscript {
+  session_id: number;
+  student_id: number;
+  student_name: string;
+  scenario: string;
+  title_ja: string | null;
+  mode: "text" | "voice";
+  created_at: string;
+  turns: TranscriptTurn[];
+  evaluation: TranscriptEvaluation | null;
+}
+
+export function getInterviewTranscript(
+  studentId: number,
+  sessionId: number,
+): Promise<InterviewTranscript> {
+  return get<InterviewTranscript>(`/students/${studentId}/interviews/${sessionId}`);
+}
+
+export interface ReviewQueueItem {
+  evaluation_id: number;
+  session_id: number;
+  student_id: number;
+  student_name: string;
+  scenario: string;
+  title_ja: string | null;
+  mode: "text" | "voice";
+  total: number;
+  created_at: string;
+  waiting_days: number;
+}
+
+export function getReviewQueue(): Promise<ReviewQueueItem[]> {
+  return get<ReviewQueueItem[]>("/review/queue");
+}
+
+export interface ReviewComplete {
+  evaluation_id: number;
+  reviewed_at: string;
+  reviewer_id: number;
+}
+
+export function completeReview(evaluationId: number): Promise<ReviewComplete> {
+  return post<ReviewComplete>(`/review/evaluations/${evaluationId}/complete`);
 }
 
 export function postAttendance(

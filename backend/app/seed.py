@@ -33,6 +33,8 @@ ADMIN_PASSWORD = "admin-demo-123"
 RUBRIC_VERSION = "seed-v0"
 HISTORY_DAYS = 60
 RISK_INACTIVE_DAYS = 12
+# 添削キューのデモ用に未確認で残す評価の数（新しい順）。
+UNREVIEWED_QUEUE_SIZE = 10
 
 TOP_COUNT = 8
 RISK_INDEX = 29
@@ -87,7 +89,7 @@ def reset_all(db: Session) -> None:
         models.Event, models.AuthSession, models.QuizAttempt, models.MockSession,
         models.InterviewEvaluation, models.InterviewTurn, models.InterviewSession,
         models.ConversationTurn, models.ConversationSession,
-        models.PronunciationAttempt, models.ShareLink,
+        models.PronunciationAttempt, models.ShareLink, models.CompanyShareLink,
         models.Passport, models.AttendanceRecord, models.AttitudeReview, models.QuizItem,
         models.Enrollment, models.Cohort, models.ContentItem, models.User, models.Organization,
     ]
@@ -225,8 +227,9 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
             if next_interview_in <= 0:
                 next_interview_in = rng.randint(4, 7) if seg != "top" else rng.randint(3, 5)
                 at = at + timedelta(minutes=rng.randint(5, 15))
+                # scenario は面接 SCENARIOS の職種キーに合わせる（教師画面の日本語タイトル用）。
                 session = models.InterviewSession(
-                    user_id=student.id, scenario="self_intro_basic", sector=sector,
+                    user_id=student.id, scenario=sector.value, sector=sector,
                     mode=SessionMode.VOICE if rng.random() < 0.6 else SessionMode.TEXT,
                     status=SessionStatus.COMPLETED, created_at=at,
                 )
@@ -296,6 +299,19 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
 
     db.commit()
 
+    # 添削キュー：新しい UNREVIEWED_QUEUE_SIZE 件だけ未確認で残し、それ以前は
+    # 確認済み（提出から6時間後に教師2人が交互に確認した体）にする。
+    # 既存の乱数消費順を守るため rng は使わず、commit 後にまとめて更新する。
+    evaluations = list(db.execute(
+        select(models.InterviewEvaluation)
+        .order_by(models.InterviewEvaluation.created_at.desc(),
+                  models.InterviewEvaluation.id.desc())
+    ).scalars())
+    for k, evaluation in enumerate(evaluations[UNREVIEWED_QUEUE_SIZE:]):
+        evaluation.reviewed_at = evaluation.created_at + timedelta(hours=6)
+        evaluation.reviewer_id = teachers[k % 2].id
+    db.commit()
+
     return {
         "organizations": 2,
         "teachers": len(teachers),
@@ -303,6 +319,7 @@ def seed_all(db: Session, now: datetime, rng_seed: int = 42) -> dict[str, object
         "students": len(students),
         "content_items": len(items),
         "quiz_items": len(quiz_items),
+        "unreviewed_evaluations": min(UNREVIEWED_QUEUE_SIZE, len(evaluations)),
         "risk_student_email": students[RISK_INDEX].email,
         "demo_student_email": students[0].email,
         "teacher_email": teachers[0].email,

@@ -11,6 +11,7 @@ from app.routers import (
     me,
     mock,
     passport,
+    review,
     share,
     speech,
     students,
@@ -39,6 +40,7 @@ app.include_router(mock.router)
 app.include_router(interview.router)
 app.include_router(passport.router)
 app.include_router(share.router)
+app.include_router(review.router)
 
 
 @app.get("/")

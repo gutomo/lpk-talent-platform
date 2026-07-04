@@ -3,7 +3,7 @@ from app.models.auth import AuthSession
 from app.models.content import ContentItem, QuizItem
 from app.models.event import Event
 from app.models.org import Cohort, Enrollment, Organization, User
-from app.models.passport import Passport, ShareLink
+from app.models.passport import CompanyShareLink, Passport, ShareLink
 from app.models.practice import (
     ConversationSession,
     ConversationTurn,
@@ -21,6 +21,7 @@ __all__ = [
     "AttitudeReview",
     "AuthSession",
     "Cohort",
+    "CompanyShareLink",
     "ContentItem",
     "ConversationSession",
     "ConversationTurn",

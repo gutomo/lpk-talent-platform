@@ -8,7 +8,7 @@ from sqlalchemy.pool import StaticPool
 from app import models
 from app.db import Base
 from app.models.enums import UserRole
-from app.seed import RISK_INACTIVE_DAYS, seed_all
+from app.seed import RISK_INACTIVE_DAYS, UNREVIEWED_QUEUE_SIZE, seed_all
 
 NOW = datetime(2026, 7, 2, 12, 0, tzinfo=UTC)
 
@@ -126,6 +126,33 @@ def test_scores_within_0_100(db: Session) -> None:
     mocks = db.execute(select(models.MockSession.score)).scalars().all()
     assert all(0 <= t <= 100 for t in totals)
     assert all(0 <= s <= 100 for s in mocks)
+
+
+def test_review_queue_leaves_newest_unreviewed(db: Session) -> None:
+    summary = db.info["summary"]
+    assert summary["unreviewed_evaluations"] == UNREVIEWED_QUEUE_SIZE
+
+    unreviewed = db.execute(
+        select(models.InterviewEvaluation)
+        .where(models.InterviewEvaluation.reviewed_at.is_(None))
+        .order_by(models.InterviewEvaluation.created_at)
+    ).scalars().all()
+    assert len(unreviewed) == UNREVIEWED_QUEUE_SIZE
+
+    # 未確認は「最も新しい10件」。確認済みの最新よりも古い未確認は存在しない。
+    newest_reviewed = db.execute(
+        select(func.max(models.InterviewEvaluation.created_at))
+        .where(models.InterviewEvaluation.reviewed_at.is_not(None))
+    ).scalar_one()
+    assert all(ev.created_at >= newest_reviewed for ev in unreviewed)
+
+    # 確認済みには確認者（教師）が入っている。
+    reviewed = db.execute(
+        select(models.InterviewEvaluation)
+        .where(models.InterviewEvaluation.reviewed_at.is_not(None))
+        .limit(5)
+    ).scalars().all()
+    assert reviewed and all(ev.reviewer_id is not None for ev in reviewed)
 
 
 def test_seed_refuses_non_empty_db(db: Session) -> None:

@@ -71,7 +71,7 @@ class HistoryItemOut(BaseModel):
 
     session_id: int
     scenario: str
-    # SCENARIOS に無い旧シナリオキー（seed の self_intro_basic 等）では None。
+    # SCENARIOS に無い旧シナリオキー（移行前データ等）では None。
     title_id: str | None = None
     title_ja: str | None = None
     sector: Sector

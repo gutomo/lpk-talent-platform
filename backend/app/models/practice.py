@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
+    DateTime,
     ForeignKey,
     Index,
     Integer,
@@ -105,6 +107,9 @@ class InterviewEvaluation(CreatedAtMixin, Base):
     scores: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
     feedback: Mapped[dict[str, Any]] = mapped_column(PortableJSON, default=dict)
     total: Mapped[int] = mapped_column(Integer)
+    # 添削キュー用。NULL = 教師未確認。確認した教師と日時を記録する。
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewer_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
 
     session: Mapped[InterviewSession] = relationship(back_populates="evaluation")
 

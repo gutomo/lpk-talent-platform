@@ -7,6 +7,7 @@ import {
   generatePassport,
   getShareLinks,
   getStudentDetail,
+  getStudentInterviews,
   passportPdfUrl,
   postAttendance,
   postAttitude,
@@ -16,6 +17,7 @@ import {
   type AttitudeChecklist,
   type ShareLink,
   type StudentDetail,
+  type StudentInterviewItem,
   type User,
 } from "../api/client";
 import PageHeader from "../components/PageHeader";
@@ -122,6 +124,9 @@ export default function TeacherStudentDetailPage({
   const [checklist, setChecklist] = useState<AttitudeChecklist | null>(null);
   const [attitudeNote, setAttitudeNote] = useState("");
 
+  // 面接履歴（評価つき完了分、新しい順）。null は読み込み中。
+  const [interviews, setInterviews] = useState<StudentInterviewItem[] | null>(null);
+
   // 共有リンク一覧。null は読み込み中。
   const [links, setLinks] = useState<ShareLink[] | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
@@ -144,6 +149,9 @@ export default function TeacherStudentDetailPage({
     getShareLinks(studentId)
       .then(setLinks)
       .catch(() => setLinks([]));
+    getStudentInterviews(studentId)
+      .then(setInterviews)
+      .catch(() => setInterviews([]));
   }, [studentId]);
 
   function beginSave(section: Section) {
@@ -385,6 +393,61 @@ export default function TeacherStudentDetailPage({
               />
             </section>
           )}
+
+          <section style={cardStyle}>
+            <p style={sectionTitleStyle}>{t("teacher.detail.interviews.title")}</p>
+            {interviews !== null && interviews.length === 0 && (
+              <p style={{ fontSize: 14, color: "#666", margin: 0 }}>
+                {t("teacher.detail.interviews.empty")}
+              </p>
+            )}
+            {interviews !== null && interviews.length > 0 && (
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {interviews.map((itv) => (
+                  <li
+                    key={itv.session_id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: 8,
+                      padding: "8px 0",
+                      borderBottom: "1px solid #eee",
+                      fontSize: 14,
+                    }}
+                  >
+                    <span style={{ color: "#666", whiteSpace: "nowrap" }}>
+                      {formatDate(itv.created_at)}
+                    </span>
+                    <span lang="ja">{itv.title_ja ?? itv.scenario}</span>
+                    <span style={{ color: "#666", fontSize: 13 }}>
+                      {t(`itv.mode.${itv.mode}`)}
+                    </span>
+                    <span style={{ fontWeight: 600, color: scoreColor(itv.total) }}>
+                      {itv.total}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: itv.reviewed_at !== null ? "#2e7d32" : "#c62828",
+                      }}
+                    >
+                      {itv.reviewed_at !== null
+                        ? `✓ ${t("teacher.detail.interviews.reviewed")}`
+                        : t("teacher.detail.interviews.notReviewed")}
+                    </span>
+                    <Link
+                      to={`/teacher/students/${detail.id}/interviews/${itv.session_id}`}
+                      style={{ color: "#1a5fb4", marginLeft: "auto", whiteSpace: "nowrap" }}
+                    >
+                      {t("teacher.detail.interviews.open")}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
           <section style={cardStyle}>
             <p style={sectionTitleStyle}>{t("teacher.detail.weakWords.title")}</p>

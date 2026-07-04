@@ -24,6 +24,7 @@ EXPECTED_TABLES = {
     "attitude_reviews",
     "passports",
     "share_links",
+    "company_share_links",
     "events",
 }
 

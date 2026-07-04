@@ -1,22 +1,38 @@
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
-from app.models import AttendanceRecord, Cohort, Enrollment, Event, Passport, User
+from app.models import (
+    AttendanceRecord,
+    Cohort,
+    Enrollment,
+    Event,
+    InterviewEvaluation,
+    InterviewSession,
+    InterviewTurn,
+    Passport,
+    User,
+)
 from app.models.enums import UserRole
 from app.routers.deps import DbSession, org_student, require_role
 from app.schemas.students import (
     AttendanceIn,
     AttendanceRecordOut,
     AttitudeIn,
+    InterviewTranscriptOut,
     PassportBrief,
     StudentDetail,
+    StudentInterviewItem,
     StudentListItem,
+    TranscriptEvaluationOut,
+    TranscriptTurnOut,
 )
+from app.services.dashboard import class_overview
 from app.services.events import log_event
+from app.services.interview import SCENARIOS
 from app.services.passport import build_snapshot
 from app.services.records import (
     add_attitude_review,
@@ -31,7 +47,7 @@ Staff = Annotated[User, Depends(require_role(UserRole.TEACHER, UserRole.ADMIN))]
 
 @router.get("")
 def list_students(staff: Staff, db: DbSession) -> list[StudentListItem]:
-    """教師 / 管理者向けの学生一覧。自組織の学生のみ返す。"""
+    """教師 / 管理者向けの学生一覧。自組織の学生のみ、進捗とリスク判定つきで返す。"""
     last_event = (
         select(Event.user_id, func.max(Event.created_at).label("last_active_at"))
         .group_by(Event.user_id)
@@ -45,6 +61,15 @@ def list_students(staff: Staff, db: DbSession) -> list[StudentListItem]:
         .where(User.role == UserRole.STUDENT, User.org_id == staff.org_id)
         .order_by(User.name)
     ).all()
+    overview = class_overview(db, staff.org_id, datetime.now(UTC))
+    empty: dict = {
+        "attendance_rate": None,
+        "interview_sessions": 0,
+        "interview_latest_total": None,
+        "pron_avg_accuracy": None,
+        "risk_flags": [],
+        "risk_level": "none",
+    }
     return [
         StudentListItem(
             id=user.id,
@@ -52,6 +77,7 @@ def list_students(staff: Staff, db: DbSession) -> list[StudentListItem]:
             email=user.email,
             cohort_name=cohort_name,
             last_active_at=last_active_at,
+            **(overview.get(user.id) or empty),
         )
         for user, cohort_name, last_active_at in rows
     ]
@@ -160,3 +186,82 @@ def record_attitude(
     )
     db.commit()
     return _detail(db, student)
+
+
+@router.get("/{student_id}/interviews")
+def student_interviews(
+    staff: Staff, db: DbSession, student_id: int
+) -> list[StudentInterviewItem]:
+    """教師向けの面接履歴（評価つき完了分のみ、新しい順）。"""
+    student = org_student(db, staff, student_id)
+    rows = db.execute(
+        select(InterviewSession, InterviewEvaluation)
+        .join(InterviewEvaluation, InterviewEvaluation.session_id == InterviewSession.id)
+        .where(InterviewSession.user_id == student.id)
+        .order_by(InterviewSession.created_at.desc(), InterviewSession.id.desc())
+    ).all()
+    items = []
+    for session, evaluation in rows:
+        scenario = SCENARIOS.get(session.scenario)
+        items.append(
+            StudentInterviewItem(
+                session_id=session.id,
+                scenario=session.scenario,
+                title_ja=scenario["title_ja"] if scenario is not None else None,
+                mode=session.mode,
+                total=evaluation.total,
+                created_at=session.created_at,
+                reviewed_at=evaluation.reviewed_at,
+            )
+        )
+    return items
+
+
+@router.get("/{student_id}/interviews/{session_id}")
+def student_interview_transcript(
+    staff: Staff, db: DbSession, student_id: int, session_id: int
+) -> InterviewTranscriptOut:
+    """面接1回分の文字起こし（全ターン + 評価）。添削キューと学生詳細が共用する。"""
+    student = org_student(db, staff, student_id)
+    session = db.get(InterviewSession, session_id)
+    if session is None or session.user_id != student.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Session not found")
+    turns = db.execute(
+        select(InterviewTurn)
+        .where(InterviewTurn.session_id == session.id)
+        .order_by(InterviewTurn.seq)
+    ).scalars()
+    evaluation = db.execute(
+        select(InterviewEvaluation).where(InterviewEvaluation.session_id == session.id)
+    ).scalar_one_or_none()
+    evaluation_out = None
+    if evaluation is not None:
+        reviewer = (
+            db.get(User, evaluation.reviewer_id)
+            if evaluation.reviewer_id is not None
+            else None
+        )
+        evaluation_out = TranscriptEvaluationOut(
+            evaluation_id=evaluation.id,
+            rubric_version=evaluation.rubric_version,
+            scores=evaluation.scores,
+            summary_ja=evaluation.feedback.get("ja"),
+            summary_id=evaluation.feedback.get("id"),
+            total=evaluation.total,
+            reviewed_at=evaluation.reviewed_at,
+            reviewer_name=reviewer.name if reviewer is not None else None,
+        )
+    scenario = SCENARIOS.get(session.scenario)
+    return InterviewTranscriptOut(
+        session_id=session.id,
+        student_id=student.id,
+        student_name=student.name,
+        scenario=session.scenario,
+        title_ja=scenario["title_ja"] if scenario is not None else None,
+        mode=session.mode,
+        created_at=session.created_at,
+        turns=[
+            TranscriptTurnOut(seq=t.seq, role=t.role, text_ja=t.text_ja) for t in turns
+        ],
+        evaluation=evaluation_out,
+    )
