@@ -3,7 +3,9 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { getMe, logout, type Role, type User } from "./api/client";
 import { setLocale, t } from "./i18n";
+import AdminCompanyLinksPage from "./pages/AdminCompanyLinksPage";
 import AdminKpiPage from "./pages/AdminKpiPage";
+import CompanyCandidatesPage from "./pages/CompanyCandidatesPage";
 import ConversationPage from "./pages/ConversationPage";
 import DrillPage from "./pages/DrillPage";
 import InterviewPage from "./pages/InterviewPage";
@@ -174,8 +176,18 @@ export default function App() {
             </RoleRoute>
           }
         />
+        <Route
+          path="/admin/links"
+          element={
+            <RoleRoute user={user} roles={["admin"]}>
+              <AdminCompanyLinksPage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
         {/* 企業向け共有ビュー。ログイン不要（トークンのみで認可、日本語のみ）。 */}
         <Route path="/share/:token" element={<SharePassportPage />} />
+        <Route path="/company/:token" element={<CompanyCandidatesPage />} />
+        <Route path="/company/:token/students/:studentId" element={<SharePassportPage />} />
         <Route
           path="*"
           element={<Navigate to={user !== null ? homePath(user.role) : "/login"} replace />}

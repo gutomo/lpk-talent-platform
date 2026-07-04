@@ -344,12 +344,15 @@ export interface ShareLink {
   last_viewed_at: string | null;
 }
 
-// 企業向け共有ビュー（ログイン不要）。snapshot は StudentSummary と同一構造。
+// 共有ビューの snapshot。backend の public_snapshot がリスクフラグを落とすため risk を含まない。
+export type PublicSnapshot = Omit<StudentSummary, "risk">;
+
+// 企業向け共有ビュー（ログイン不要）。
 export interface SharedPassport {
   version: number;
   created_at: string;
   expires_at: string;
-  snapshot: StudentSummary;
+  snapshot: PublicSnapshot;
 }
 
 export function getShareLinks(studentId: number): Promise<ShareLink[]> {
@@ -375,6 +378,76 @@ export function sharedPdfUrl(token: string): string {
 // 企業に渡すURL（フロントの公開ページ）。トークンはURL経路のみで伝搬する。
 export function shareUrl(token: string): string {
   return `${window.location.origin}/share/${token}`;
+}
+
+// ------------------------------------------------------------------ 企業向け組織単位リンク
+
+// admin（LPK経営者）が発行する組織単位の共有リンク。トークン1本で
+// Passport 発行済み学生全員の比較テーブルと各 Passport を閲覧できる。
+export interface CompanyShareLink {
+  id: number;
+  token: string;
+  created_at: string;
+  expires_at: string;
+  revoked: boolean;
+  active: boolean;
+  views: number;
+  last_viewed_at: string | null;
+}
+
+export function getCompanyLinks(): Promise<CompanyShareLink[]> {
+  return get<CompanyShareLink[]>("/company-links");
+}
+
+export function createCompanyLink(): Promise<CompanyShareLink> {
+  return post<CompanyShareLink>("/company-links");
+}
+
+export function revokeCompanyLink(linkId: number): Promise<CompanyShareLink> {
+  return post<CompanyShareLink>(`/company-links/${linkId}/revoke`);
+}
+
+// 候補者比較テーブルの1行（最新版 Passport snapshot の要約）。
+export interface CandidateRow {
+  student_id: number;
+  name: string;
+  cohort: string | null;
+  sector: Sector | null;
+  passport_version: number;
+  generated_at: string;
+  level_current: string | null;
+  pron_avg_accuracy: number | null;
+  interview_sessions: number;
+  interview_latest_total: number | null;
+  attendance_rate: number | null;
+  checklist_done: number;
+  checklist_total: number;
+}
+
+export interface SharedCandidates {
+  lpk_name: string;
+  expires_at: string;
+  candidates: CandidateRow[];
+}
+
+export function getSharedCandidates(token: string): Promise<SharedCandidates> {
+  return get<SharedCandidates>(`/share/company/${token}`);
+}
+
+export function getSharedCandidatePassport(
+  token: string,
+  studentId: number,
+): Promise<SharedPassport> {
+  return get<SharedPassport>(`/share/company/${token}/students/${studentId}`);
+}
+
+export function sharedCandidatePdfUrl(token: string, studentId: number): string {
+  return `${BASE}/share/company/${token}/students/${studentId}/pdf`;
+}
+
+// 企業に渡すURL（比較テーブルの公開ページ）。
+export function companyShareUrl(token: string): string {
+  return `${window.location.origin}/company/${token}`;
 }
 
 export type Sector = "kaigo" | "food_manufacturing" | "restaurant" | "general";

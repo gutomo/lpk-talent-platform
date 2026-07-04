@@ -161,6 +161,8 @@ def test_shared_view_without_login(client: TestClient, ctx) -> None:
     assert body["version"] == 1
     assert body["snapshot"]["student"]["name"] == "Siti Rahma"
     assert body["snapshot"]["student"]["cohort"] == "2026年4月期 介護コース"
+    # リスクフラグは企業ビューに出さない（public_snapshot で落とす）。
+    assert "risk" not in body["snapshot"]
 
 
 def test_shared_view_unknown_token_404(client: TestClient, ctx) -> None:

@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.routers import (
     auth,
+    company_links,
     conversation,
     dashboard,
     drill,
@@ -41,6 +42,7 @@ app.include_router(mock.router)
 app.include_router(interview.router)
 app.include_router(passport.router)
 app.include_router(share.router)
+app.include_router(company_links.router)
 app.include_router(review.router)
 app.include_router(dashboard.router)
 

@@ -156,6 +156,7 @@ export default function AdminKpiPage({
       <p style={{ marginTop: 0, display: "flex", gap: 16, flexWrap: "wrap" }}>
         <Link to="/teacher/students">{t("admin.kpi.toStudents")}</Link>
         <Link to="/teacher/review">{t("teacher.queue.link")}</Link>
+        <Link to="/admin/links">{t("admin.kpi.toLinks")}</Link>
       </p>
 
       {error && (

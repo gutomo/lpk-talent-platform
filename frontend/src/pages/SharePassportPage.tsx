@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import {
+  getSharedCandidatePassport,
   getSharedPassport,
+  sharedCandidatePdfUrl,
   sharedPdfUrl,
   type SharedPassport,
 } from "../api/client";
@@ -11,6 +13,8 @@ import { setLocale, t } from "../i18n";
 
 // 企業向け共有ビュー（ログイン不要）。CLAUDE.md の方針どおり日本語のみで表示する。
 // トークンはURL経路のみ。無効（不存在・失効・期限切れ）はAPIが一律404を返す。
+// 2ルート共用：/share/:token（学生別リンク）と
+// /company/:token/students/:studentId（組織単位リンク経由の個別閲覧・常に最新版）。
 
 const cardStyle: React.CSSProperties = {
   border: "1px solid #ddd",
@@ -42,6 +46,7 @@ function StatCard({ label, value, color }: { label: string; value: string; color
 export default function SharePassportPage() {
   const params = useParams();
   const token = params.token ?? "";
+  const studentId = params.studentId !== undefined ? Number(params.studentId) : null;
 
   const [passport, setPassport] = useState<SharedPassport | null>(null);
   const [invalid, setInvalid] = useState(false);
@@ -49,14 +54,17 @@ export default function SharePassportPage() {
   useEffect(() => {
     // 公開ページは日本語のみ（学生ログインの locale 状態に依存しない）。
     setLocale("ja");
-    if (token === "") {
+    if (token === "" || (studentId !== null && !Number.isInteger(studentId))) {
       setInvalid(true);
       return;
     }
-    getSharedPassport(token)
+    (studentId !== null
+      ? getSharedCandidatePassport(token, studentId)
+      : getSharedPassport(token)
+    )
       .then(setPassport)
       .catch(() => setInvalid(true));
-  }, [token]);
+  }, [token, studentId]);
 
   const snap = passport?.snapshot ?? null;
   const itvTrend = snap?.interview.trend ?? [];
@@ -76,6 +84,13 @@ export default function SharePassportPage() {
         <h1 style={{ margin: 0, fontSize: 22, color: "#1a5fb4" }}>
           Talent Passport <span style={{ fontSize: 15 }}>{t("share.subtitle")}</span>
         </h1>
+        {studentId !== null && (
+          <p style={{ margin: "8px 0 0", fontSize: 14 }}>
+            <Link to={`/company/${token}`} style={{ color: "#1a5fb4" }}>
+              {t("company.back")}
+            </Link>
+          </p>
+        )}
       </header>
 
       {invalid && (
@@ -113,7 +128,11 @@ export default function SharePassportPage() {
             </p>
             <p style={{ margin: "10px 0 0" }}>
               <a
-                href={sharedPdfUrl(token)}
+                href={
+                  studentId !== null
+                    ? sharedCandidatePdfUrl(token, studentId)
+                    : sharedPdfUrl(token)
+                }
                 style={{
                   display: "inline-block",
                   padding: "10px 16px",
