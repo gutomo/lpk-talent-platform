@@ -27,7 +27,7 @@
 - 音声変換：ffmpeg（WebM/Opus → WAV 16kHz mono）
 - PDF生成：WeasyPrint + Noto Sans JP（Talent Passport）
 - メール：Amazon SES（または SendGrid）
-- IaC / デプロイ：Terraform + Azure Container Apps（ARM64、scale-to-zero）
+- IaC / デプロイ：Terraform + Azure Container Apps（linux/amd64、scale-to-zero。ACA は ARM64 イメージ非対応のため）
 - 補足：顧客本番提案では Azure AI Foundry / M365 系へ載せ替えるパスを想定。demoはBedrockのまま。
 
 ## ロールとUI言語
