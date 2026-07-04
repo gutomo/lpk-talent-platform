@@ -1,0 +1,135 @@
+# 手動起動のデプロイ：build → push →（production 環境の承認ゲート）→ terraform apply → migration ジョブ。
+#
+# 初回のみ必要な GitHub 側設定：
+# - Secrets:
+#     AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID
+#       （GitHub OIDC フェデレーション済みの Entra アプリ。Contributor 相当）
+#     TF_VAR_AZURE_SPEECH_KEY / TF_VAR_AWS_ACCESS_KEY_ID / TF_VAR_AWS_SECRET_ACCESS_KEY
+#       （実プロバイダ切替時のみ。未設定なら stub のまま）
+# - Variables:
+#     ACR_LOGIN_SERVER（infra/terraform の `terraform output -raw acr_login_server` の値）
+#     PROVIDER_MODE / LLM_PROVIDER_MODE（省略時 stub）
+# - Environments: production に Required reviewers を設定（これが apply の手動ゲート）
+# - infra/terraform/versions.tf の backend "azurerm" を有効化し、remote state を bootstrap 済みであること
+#   （infra/terraform/README.md 参照。初回のインフラ構築自体も README の手順で先に済ませる）
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency: deploy
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  ACR: ${{ vars.ACR_LOGIN_SERVER }}
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ACR login
+        run: az acr login --name "${ACR%%.*}"
+
+      # ACA は linux/amd64 のみ対応（CLAUDE.md 地雷対応。ARM64 は ACA 非対応が確定）
+      - name: Build and push backend
+        run: |
+          docker build --platform linux/amd64 -f backend/Dockerfile \
+            -t "$ACR/lpk-backend:$IMAGE_TAG" .
+          docker push "$ACR/lpk-backend:$IMAGE_TAG"
+
+      - name: Build and push frontend
+        run: |
+          docker build --platform linux/amd64 \
+            -t "$ACR/lpk-frontend:$IMAGE_TAG" frontend
+          docker push "$ACR/lpk-frontend:$IMAGE_TAG"
+
+  apply:
+    needs: build-push
+    runs-on: ubuntu-latest
+    # production の Required reviewers が手動承認ゲートになる
+    environment: production
+    defaults:
+      run:
+        working-directory: infra/terraform
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_provider_mode: ${{ vars.PROVIDER_MODE || 'stub' }}
+      TF_VAR_llm_provider_mode: ${{ vars.LLM_PROVIDER_MODE || 'stub' }}
+      TF_VAR_azure_speech_key: ${{ secrets.TF_VAR_AZURE_SPEECH_KEY }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_AWS_ACCESS_KEY_ID }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_AWS_SECRET_ACCESS_KEY }}
+    outputs:
+      resource_group: ${{ steps.tf_outputs.outputs.resource_group }}
+      migrate_job: ${{ steps.tf_outputs.outputs.migrate_job }}
+      frontend_url: ${{ steps.tf_outputs.outputs.frontend_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - run: terraform init
+
+      - run: terraform plan -input=false -var "image_tag=$IMAGE_TAG" -out=tfplan
+
+      - run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Collect outputs
+        id: tf_outputs
+        run: |
+          {
+            echo "resource_group=$(terraform output -raw resource_group_name)"
+            echo "migrate_job=$(terraform output -raw migrate_job_name)"
+            echo "frontend_url=$(terraform output -raw frontend_url)"
+          } >> "$GITHUB_OUTPUT"
+
+  migrate:
+    needs: apply
+    runs-on: ubuntu-latest
+    env:
+      RG: ${{ needs.apply.outputs.resource_group }}
+      JOB: ${{ needs.apply.outputs.migrate_job }}
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run alembic upgrade head (ACA job)
+        run: |
+          exec_name=$(az containerapp job start -g "$RG" -n "$JOB" --query name -o tsv)
+          echo "started execution: $exec_name"
+          for i in $(seq 1 60); do
+            status=$(az containerapp job execution show \
+              -g "$RG" -n "$JOB" --job-execution-name "$exec_name" \
+              --query "properties.status" -o tsv)
+            echo "migration status: $status"
+            case "$status" in
+              Succeeded) exit 0 ;;
+              Failed|Stopped) exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "migration timed out after 10 minutes"
+          exit 1
+
+      - name: Demo URL
+        run: echo "frontend = ${{ needs.apply.outputs.frontend_url }}"
