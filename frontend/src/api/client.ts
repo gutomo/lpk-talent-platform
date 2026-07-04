@@ -259,6 +259,47 @@ export function completeReview(evaluationId: number): Promise<ReviewComplete> {
   return post<ReviewComplete>(`/review/evaluations/${evaluationId}/complete`);
 }
 
+export interface RiskStudent {
+  id: number;
+  name: string;
+  flags: string[];
+}
+
+export interface WeeklyPoint {
+  week_start: string;
+  events: number;
+  active_students: number;
+  mock_avg: number | null;
+}
+
+// PoC KPI カード（BUILD_PLAN の KPI 表と同一定義）。
+export interface KpiCards {
+  ai_usage_students: number;
+  ai_usage_rate: number;
+  interview_avg_sessions: number;
+  interview_target_met: number;
+  interview_improvement_pct: number | null;
+  mock_early_avg: number | null;
+  mock_recent_avg: number | null;
+  review_pending: number;
+  review_avg_waiting_days: number | null;
+}
+
+export interface AdminKpi {
+  students: number;
+  risk_students: RiskStudent[];
+  n4_rate: number;
+  mock_avg: number | null;
+  attendance_avg: number | null;
+  practice_events_7d: number;
+  weekly: WeeklyPoint[];
+  kpi_cards: KpiCards;
+}
+
+export function getAdminKpi(): Promise<AdminKpi> {
+  return get<AdminKpi>("/dashboard/kpi");
+}
+
 export function postAttendance(
   studentId: number,
   body: AttendanceIn,

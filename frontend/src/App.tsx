@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { getMe, logout, type Role, type User } from "./api/client";
 import { setLocale, t } from "./i18n";
+import AdminKpiPage from "./pages/AdminKpiPage";
 import ConversationPage from "./pages/ConversationPage";
 import DrillPage from "./pages/DrillPage";
 import InterviewPage from "./pages/InterviewPage";
@@ -17,7 +18,9 @@ import TeacherStudentDetailPage from "./pages/TeacherStudentDetailPage";
 import TeacherStudentsPage from "./pages/TeacherStudentsPage";
 
 function homePath(role: Role): string {
-  return role === "student" ? "/student" : "/teacher/students";
+  if (role === "student") return "/student";
+  // 経営者はKPIダッシュボード、教師はクラス一覧が起点。
+  return role === "admin" ? "/admin/kpi" : "/teacher/students";
 }
 
 function RoleRoute({
@@ -160,6 +163,14 @@ export default function App() {
           element={
             <RoleRoute user={user} roles={["teacher", "admin"]}>
               <TeacherReviewQueuePage user={user as User} onLogout={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/admin/kpi"
+          element={
+            <RoleRoute user={user} roles={["admin"]}>
+              <AdminKpiPage user={user as User} onLogout={handleLogout} />
             </RoleRoute>
           }
         />

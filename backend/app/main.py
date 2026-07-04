@@ -5,6 +5,7 @@ from app.config import get_settings
 from app.routers import (
     auth,
     conversation,
+    dashboard,
     drill,
     health,
     interview,
@@ -41,6 +42,7 @@ app.include_router(interview.router)
 app.include_router(passport.router)
 app.include_router(share.router)
 app.include_router(review.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/")

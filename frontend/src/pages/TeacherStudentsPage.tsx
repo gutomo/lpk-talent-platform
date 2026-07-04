@@ -70,7 +70,23 @@ export default function TeacherStudentsPage({
       }}
     >
       <PageHeader title={t("teacher.students.title")} user={user} onLogout={onLogout} />
-      <p style={{ marginTop: 0 }}>
+      <p style={{ marginTop: 0, display: "flex", gap: 10, flexWrap: "wrap" }}>
+        {user.role === "admin" && (
+          <Link
+            to="/admin/kpi"
+            style={{
+              display: "inline-block",
+              padding: "8px 14px",
+              border: "1px solid #1a5fb4",
+              borderRadius: 10,
+              color: "#1a5fb4",
+              textDecoration: "none",
+              fontSize: 14,
+            }}
+          >
+            {t("admin.kpi.link")}
+          </Link>
+        )}
         <Link
           to="/teacher/review"
           style={{
