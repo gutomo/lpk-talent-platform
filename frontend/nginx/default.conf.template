@@ -1,0 +1,38 @@
+# ${BACKEND_ORIGIN} と ${NGINX_LOCAL_RESOLVERS} は起動時に envsubst で展開される
+# （nginx 変数 $host / $uri / $backend_origin 等は環境変数ではないためそのまま残る）。
+server {
+    listen 8080;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # リクエスト時に DNS 解決させる（変数 proxy_pass + resolver）。
+    # 静的 proxy_pass は起動時解決に失敗すると nginx ごと落ち、backend 再デプロイ中の
+    # コールドスタートでクラッシュループし得る。NGINX_LOCAL_RESOLVERS は
+    # 公式イメージの entrypoint が /etc/resolv.conf から設定する。
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=30s;
+
+    # /api/foo -> ${BACKEND_ORIGIN}/foo（vite.config.ts の rewrite と同じプレフィックス除去）
+    location /api/ {
+        set $backend_origin ${BACKEND_ORIGIN};
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass $backend_origin;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # 録音アップロード（45秒 WebM）と STT/LLM ターンの処理時間に余裕を持たせる
+        client_max_body_size 25m;
+        proxy_read_timeout 120s;
+    }
+
+    # ハッシュ付きアセットは長期キャッシュ
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # SPA フォールバック
+    location / {
+        try_files $uri /index.html;
+    }
+}

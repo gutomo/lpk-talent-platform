@@ -1,0 +1,24 @@
+# cp terraform.tfvars.example terraform.tfvars して編集する（terraform.tfvars は gitignore 対象）。
+# 初回構築の手順は同ディレクトリの README.md を参照。
+
+prefix   = "lpk-poc"
+location = "japaneast"
+
+# CI が git SHA を渡す。手動 apply では latest のままで良い。
+image_tag = "latest"
+
+# デモ既定は stub（資格情報不要で通しデモが動く）。実プロバイダに切り替えるときのみ以下を設定する。
+provider_mode     = "stub" # stub | azure
+llm_provider_mode = "stub" # stub | bedrock
+
+# --- 既存リソース参照（provider_mode = "azure" のとき） ---
+azure_speech_key    = ""
+azure_speech_region = "japaneast"
+# カスタムサブドメイン利用時のみ（例: https://myresource.cognitiveservices.azure.com）
+azure_speech_endpoint = ""
+
+# --- Bedrock / SES 用 AWS 資格情報（llm_provider_mode = "bedrock" のとき） ---
+aws_access_key_id     = ""
+aws_secret_access_key = ""
+aws_region            = "ap-northeast-1"
+bedrock_model_id      = "anthropic.claude-sonnet-4-20250514-v1:0"

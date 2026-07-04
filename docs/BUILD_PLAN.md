@@ -119,7 +119,7 @@
 
 ## Phase 6：計測・デプロイ・デモ準備（1.5日）
 - [x] KPI集計APIと経営者画面への表示（上のKPI表と同一定義。Phase 5 の /dashboard/kpi で実装済みを検収）
-- [ ] Terraform拡張：既存のACA scaffold（versions / variables / main / outputs / tfvars.example）を流用し、PostgreSQL Flexible Server（B1ms）と Key Vault を追加。Speech / SES は既存リソース参照（tfvars）
+- [x] Terraform拡張：ACA scaffold（versions / variables / main / outputs / tfvars.example）を新規作成し、PostgreSQL Flexible Server（B1ms）と Key Vault を追加。Speech / SES は既存リソース参照（tfvars）。apply は資格情報準備後（infra/terraform/README.md の bootstrap 手順）
 - [ ] GitHub Actions：build → push → apply（手動ゲート）、migrationジョブ
 - [ ] 本番用seed投入スクリプト
 - [ ] docs/DEMO.md：10分デモ台本 + フォールバック（事前録画）メモ

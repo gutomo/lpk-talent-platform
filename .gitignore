@@ -17,6 +17,12 @@ dist/
 *.log
 *.tsbuildinfo
 
+# Terraform（tfvars は資格情報を含み得るため example のみコミット）
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+
 # OS / editor
 .DS_Store
 .idea/

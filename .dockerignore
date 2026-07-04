@@ -1,0 +1,12 @@
+# backend イメージのビルドコンテキスト（リポジトリルート）用
+.git
+.github
+docs
+infra
+**/__pycache__
+**/.venv
+**/.pytest_cache
+**/.ruff_cache
+**/node_modules
+frontend/dist
+backend/.env
