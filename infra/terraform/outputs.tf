@@ -29,3 +29,8 @@ output "migrate_job_name" {
   description = "az containerapp job start で起動する migration ジョブ名"
   value       = azurerm_container_app_job.migrate.name
 }
+
+output "seed_job_name" {
+  description = "scripts/seed/seed_remote.sh で起動する seed ジョブ名"
+  value       = azurerm_container_app_job.seed.name
+}

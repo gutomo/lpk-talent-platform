@@ -29,9 +29,11 @@ docker push "$ACR/lpk-frontend:latest"
 # 3) 全体を apply
 terraform apply
 
-# 4) migration → seed（seed は scripts/seed の手順参照）
+# 4) migration → seed
 az containerapp job start -g $(terraform output -raw resource_group_name) \
   -n $(terraform output -raw migrate_job_name)
+../../scripts/seed/seed_remote.sh \
+  $(terraform output -raw resource_group_name) $(terraform output -raw seed_job_name)
 
 # 5) 公開 URL
 terraform output frontend_url

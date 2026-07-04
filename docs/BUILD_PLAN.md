@@ -121,7 +121,7 @@
 - [x] KPI集計APIと経営者画面への表示（上のKPI表と同一定義。Phase 5 の /dashboard/kpi で実装済みを検収）
 - [x] Terraform拡張：ACA scaffold（versions / variables / main / outputs / tfvars.example）を新規作成し、PostgreSQL Flexible Server（B1ms）と Key Vault を追加。Speech / SES は既存リソース参照（tfvars）。apply は資格情報準備後（infra/terraform/README.md の bootstrap 手順）
 - [x] GitHub Actions：build → push → apply（production 環境の承認ゲート）、migrationジョブ（.github/workflows/deploy.yml。必要な Secrets / Variables はファイル冒頭に記載）
-- [ ] 本番用seed投入スクリプト
+- [x] 本番用seed投入スクリプト（ACA seed ジョブ + scripts/seed/seed_remote.sh。完了待ちとデモアカウント表示まで行う）
 - [ ] docs/DEMO.md：10分デモ台本 + フォールバック（事前録画）メモ
 
 **受け入れ**：公開URLで冒頭の10分デモが通しで完走。スモークチェックリスト全通過。

@@ -397,3 +397,56 @@ resource "azurerm_container_app_job" "migrate" {
 
   depends_on = [azurerm_role_assignment.acr_pull, azurerm_key_vault_access_policy.app]
 }
+
+# --- seed ジョブ（手動トリガー。全行を消して架空デモデータを再投入する） ---
+# 起動は scripts/seed/seed_remote.sh（完了待ちとデモアカウント表示まで行う）。
+# PoC の DB は全て架空データなので --reset 固定で問題ない（CLAUDE.md の PII 方針）。
+
+resource "azurerm_container_app_job" "seed" {
+  name                         = "${var.prefix}-seed"
+  location                     = azurerm_resource_group.main.location
+  resource_group_name          = azurerm_resource_group.main.name
+  container_app_environment_id = azurerm_container_app_environment.main.id
+
+  # argon2 ハッシュ 30名分 + 60日分の履歴生成のため migrate より余裕を持たせる
+  replica_timeout_in_seconds = 900
+  replica_retry_limit        = 0
+
+  manual_trigger_config {
+    parallelism              = 1
+    replica_completion_count = 1
+  }
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.app.id]
+  }
+
+  registry {
+    server   = azurerm_container_registry.main.login_server
+    identity = azurerm_user_assigned_identity.app.id
+  }
+
+  secret {
+    name                = "database-url"
+    identity            = azurerm_user_assigned_identity.app.id
+    key_vault_secret_id = azurerm_key_vault_secret.database_url.versionless_id
+  }
+
+  template {
+    container {
+      name    = "seed"
+      image   = local.backend_image
+      cpu     = 0.5
+      memory  = "1Gi"
+      command = ["python", "/srv/scripts/seed/seed_demo.py", "--reset"]
+
+      env {
+        name        = "DATABASE_URL"
+        secret_name = "database-url"
+      }
+    }
+  }
+
+  depends_on = [azurerm_role_assignment.acr_pull, azurerm_key_vault_access_policy.app]
+}
